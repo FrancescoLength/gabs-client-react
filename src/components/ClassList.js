@@ -56,13 +56,13 @@ function ClassList({ classes, onActionSuccess }) {
                                 <h5 className="mb-1">{item.name}</h5>
                                 <small>{item.date}</small>
                             </div>
-                            <p className="mb-1">Hours: {item.time} - Instructor: {item.instructor || 'N/D'}</p>
+                            <p className="mb-1">Time: {item.start_time} - {item.end_time} - Duration: {item.duration} minutes - Instructor: {item.instructor || 'N/D'} - Available Spaces: <strong className="fs-5">{item.available_spaces}</strong></p>
                             <button 
                                 className="btn btn-primary btn-sm" 
                                 onClick={() => handleBook(item)}
                                 disabled={isLoading}
                             >
-                                {isLoading ? <span className="spinner-border spinner-border-sm"></span> : 'Book'}
+                                {isLoading ? <span className="spinner-border spinner-border-sm"></span> : (item.available_spaces < 1 ? 'Book Waitinglist' : 'Book')}
                             </button>
                         </div>
                     );

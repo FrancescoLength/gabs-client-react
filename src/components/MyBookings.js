@@ -62,7 +62,7 @@ function MyBookings({ bookings, onActionSuccess }) {
                                 <h5 className="mb-1">{booking.name}</h5>
                                 <small>{booking.date}</small>
                             </div>
-                            <p className="mb-1">Orario: {booking.time}</p>
+                            <p className="mb-1">Time: {booking.time}</p>
                             <div className="d-flex justify-content-between align-items-center">
                                 <span className={`badge bg-${booking.status === 'Booked' ? 'success' : 'warning'}`}>
                                     {booking.status}

@@ -5,6 +5,27 @@ import * as api from '../api';
 import MyBookings from './MyBookings';
 import ClassList from './ClassList';
 
+const parseBookingDate = (dateString) => {
+    const parts = dateString.split(' ');
+    if (parts.length < 3) return null;
+
+    const day = parts[1].replace(/\D/g, '');
+    const monthName = parts[2];
+    const year = new Date().getFullYear();
+
+    const monthMap = { 'january': '01', 'february': '02', 'march': '03', 'april': '04', 'may': '05', 'june': '06', 'july': '07', 'august': '08', 'september': '09', 'october': '10', 'november': '11', 'december': '12' };
+    const month = monthMap[monthName.toLowerCase()];
+
+    if (!month || !day) return null;
+
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+};
+
+const parseAvailableClassDate = (dateString) => {
+    const [day, month, year] = dateString.split('/');
+    return `${year}-${month}-${day}`;
+};
+
 function Dashboard() {
   const { token } = useAuth();
   const [myBookings, setMyBookings] = useState([]);
@@ -12,7 +33,6 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // useCallback to prevent the function from being recreated on every render
   const fetchData = useCallback(async () => {
     if (!token) return;
 
@@ -25,8 +45,12 @@ function Dashboard() {
         api.getClasses(token)
       ]);
 
+      const bookedClassesSet = new Set(bookingsData.map(b => `${b.name}|${parseBookingDate(b.date)}`));
+
+      const filteredClasses = classesData.filter(c => !bookedClassesSet.has(`${c.name}|${parseAvailableClassDate(c.date)}`));
+
       setMyBookings(bookingsData);
-      setAvailableClasses(classesData);
+      setAvailableClasses(filteredClasses);
 
     } catch (err) {
       setError(err.message);
