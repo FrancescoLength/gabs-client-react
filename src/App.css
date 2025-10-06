@@ -1,38 +1,83 @@
-.App {
-  text-align: center;
+
+/* General Styling based on workout_bristol_hacked.png */
+:root {
+  --primary-brand-color: #FF0000; /* Red from the hacked logo */
+  --secondary-accent-color: #00FF00; /* Bright green from the binary code */
+  --main-bg-color: #000000; /* Black background */
+  --main-text-color: #DDDDDD; /* Light grey for main text on black background */
+  --navbar-bg-color: #000000; /* Black navbar */
+  --button-border-radius: 4px;
+  --card-border-radius: 8px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Override Bootstrap primary colors */
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus {
+  background-color: var(--primary-brand-color) !important;
+  border-color: var(--primary-brand-color) !important;
+  border-radius: var(--button-border-radius);
+  color: var(--main-text-color); /* Ensure text is visible on red button */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.btn-danger {
+  background-color: var(--primary-brand-color) !important;
+  border-color: var(--primary-brand-color) !important;
+  color: var(--main-text-color); /* Ensure text is visible on red button */
 }
 
-.App-link {
-  color: #61dafb;
+.btn-link {
+  color: var(--primary-brand-color) !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Navbar Styling */
+.navbar {
+  background-color: var(--navbar-bg-color) !important;
+  border-bottom: 1px solid var(--primary-brand-color); /* Red border for hacked feel */
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+  color: var(--primary-brand-color) !important; /* Red links on black navbar */
+}
+
+.navbar-nav .nav-link:hover {
+  color: var(--secondary-accent-color) !important; /* Green hover effect */
+}
+
+/* Card and Container Styling */
+.card,
+.list-group-item,
+.p-5.mb-4.bg-light.rounded-3 {
+  background-color: #1a1a1a; /* Slightly lighter black for cards */
+  color: var(--main-text-color);
+  border-radius: var(--card-border-radius);
+  border-color: var(--primary-brand-color); /* Red border for hacked feel */
+}
+
+.list-group-item {
+    background-color: #1a1a1a;
+}
+
+.list-group-item:hover {
+    background-color: #333333; /* Darker grey on hover */
+}
+
+/* Adjust text color for dark backgrounds if needed (e.g. for alerts) */
+.alert-danger {
+    color: var(--main-text-color); 
+    background-color: var(--primary-brand-color); 
+    border-color: var(--primary-brand-color); 
+}
+
+/* Spinner color */
+.spinner-border {
+    color: var(--secondary-accent-color);
 }

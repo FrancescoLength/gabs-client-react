@@ -1,23 +1,92 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import hackedLogo from './workout_bristol_hacked.png'; // Import the image
 import './App.css';
 
+// Wrapper per l'intera App
 function App() {
   return (
+    <AuthProvider>
+      <Router>
+        <Layout />
+      </Router>
+    </AuthProvider>
+  );
+}
+
+// Componente che gestisce il layout e le rotte
+function Layout() {
+  const { isLoggedIn, logout } = useAuth();
+
+  return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div className="container-fluid">
+          <img src={hackedLogo} alt="Workout Bristol Hacked Logo" className="navbar-brand mx-auto d-block" style={{ height: '120px' }} />
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <Link className="nav-link" to="/">Home</Link>
+              </li>
+              {isLoggedIn ? (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                  </li>
+                  <li className="nav-item">
+                    <button className="btn btn-link nav-link" onClick={logout}>Logout</button>
+                  </li>
+                </>
+              ) : (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/login">Login</Link>
+                </li>
+              )}
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <main className="container mt-4">
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/" element={<HomePage />} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
+
+// Placeholder Component
+function HomePage() {
+  const { isLoggedIn } = useAuth();
+  return (
+    <div className="p-5 mb-4 bg-dark rounded-3">
+      <div className="container-fluid py-5">
+        <h1 className="display-5 fw-bold">GABS aka Gym Automatic Booking System</h1>
+        <p className="col-md-8 fs-4">Automates your gym class bookings so you’ll never have to set alarms or race against time again.</p>
+        {!isLoggedIn && (
+          <>
+            <p>Please log in to get started.</p>
+            <Link className="btn btn-primary btn-lg" to="/login">Login</Link>
+          </>
+        )}
+      </div>
     </div>
   );
 }
