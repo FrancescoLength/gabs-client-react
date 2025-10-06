@@ -25,7 +25,13 @@ function ClassList({ classes, onActionSuccess }) {
 
         try {
             const result = await api.bookClass(token, item.name, dateForApi);
-            alert(`Result: ${result.status} - ${result.message || 'Completed'}`);
+            if (result.status === 'success') {
+                alert('Booking successful!');
+            } else if (result.status === 'info') {
+                alert(result.message);
+            } else if (result.status === 'error') {
+                setError(result.message);
+            }
             onActionSuccess(); // Ricarica i dati
         } catch (err) {
             setError(err.message);
