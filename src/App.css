@@ -1,11 +1,11 @@
 
-/* General Styling based on workout_bristol_hacked.png */
+/* General Styling */
 :root {
-  --primary-brand-color: #FF0000; /* Red from the hacked logo */
-  --secondary-accent-color: #00FF00; /* Bright green from the binary code */
-  --main-bg-color: #000000; /* Black background */
-  --main-text-color: #DDDDDD; /* Light grey for main text on black background */
-  --navbar-bg-color: #000000; /* Black navbar */
+  --primary-brand-color: rgb(230, 30, 33); /* Professional Blue */
+  --secondary-accent-color: rgb(230, 30, 33); /* Vibrant Red */
+  --main-bg-color: #ffffff; /* White background */
+  --main-text-color: #212529; /* Dark grey for main text */
+  --navbar-bg-color: #fffff; /* White navbar */
   --button-border-radius: 4px;
   --card-border-radius: 8px;
 }
@@ -24,13 +24,13 @@ body {
   background-color: var(--primary-brand-color) !important;
   border-color: var(--primary-brand-color) !important;
   border-radius: var(--button-border-radius);
-  color: var(--main-text-color); /* Ensure text is visible on red button */
+  color: #ffffff; /* White text on blue button */
 }
 
 .btn-danger {
-  background-color: var(--primary-brand-color) !important;
-  border-color: var(--primary-brand-color) !important;
-  color: var(--main-text-color); /* Ensure text is visible on red button */
+  background-color: var(--secondary-accent-color) !important;
+  border-color: var(--secondary-accent-color) !important;
+  color: #ffffff; /* White text on red button */
 }
 
 .btn-link {
@@ -40,44 +40,44 @@ body {
 /* Navbar Styling */
 .navbar {
   background-color: var(--navbar-bg-color) !important;
-  border-bottom: 1px solid var(--primary-brand-color); /* Red border for hacked feel */
+  border-bottom: 1px solid #dee2e6; /* Light grey border */
 }
 
 .navbar-brand,
 .navbar-nav .nav-link {
-  color: var(--primary-brand-color) !important; /* Red links on black navbar */
+  color: var(--main-text-color) !important; /* Dark grey links on white navbar */
 }
 
 .navbar-nav .nav-link:hover {
-  color: var(--secondary-accent-color) !important; /* Green hover effect */
+  color: var(--secondary-accent-color) !important; /* Red hover effect */
 }
 
 /* Card and Container Styling */
 .card,
 .list-group-item,
 .p-5.mb-4.bg-light.rounded-3 {
-  background-color: #1a1a1a; /* Slightly lighter black for cards */
+  background-color: #ffffff; /* White cards */
   color: var(--main-text-color);
   border-radius: var(--card-border-radius);
-  border-color: var(--primary-brand-color); /* Red border for hacked feel */
+  border: 1px solid #dee2e6; /* Light grey border */
 }
 
 .list-group-item {
-    background-color: #1a1a1a;
+    background-color: #ffffff;
 }
 
 .list-group-item:hover {
-    background-color: #333333; /* Darker grey on hover */
+    background-color: #f8f9fa; /* Lighter grey on hover */
 }
 
 /* Adjust text color for dark backgrounds if needed (e.g. for alerts) */
 .alert-danger {
-    color: var(--main-text-color); 
-    background-color: var(--primary-brand-color); 
-    border-color: var(--primary-brand-color); 
+    color: #ffffff; 
+    background-color: var(--secondary-accent-color); 
+    border-color: var(--secondary-accent-color); 
 }
 
 /* Spinner color */
 .spinner-border {
-    color: var(--secondary-accent-color);
+    color: var(--primary-brand-color);
 }

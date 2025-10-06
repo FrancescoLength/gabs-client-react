@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
-import hackedLogo from './workout_bristol_hacked.png'; // Import the image
+import hackedLogo from './gabs_logo.png'; // Import the image
 import './App.css';
 
 // Wrapper per l'intera App
@@ -24,9 +24,12 @@ function Layout() {
 
   return (
     <div className="App">
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
-          <img src={hackedLogo} alt="Workout Bristol Hacked Logo" className="navbar-brand mx-auto d-block" style={{ height: '120px' }} />
+          <div className="navbar-brand"></div>
+          <Link to="/" className="navbar-brand mx-auto">
+            <img src={hackedLogo} alt="Gabs Logo" style={{ height: '120px' }} />
+          </Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
@@ -76,7 +79,7 @@ function Layout() {
 function HomePage() {
   const { isLoggedIn } = useAuth();
   return (
-    <div className="p-5 mb-4 bg-dark rounded-3">
+    <div className="p-5 mb-4 bg-light rounded-3">
       <div className="container-fluid py-5">
         <h1 className="display-5 fw-bold">GABS aka Gym Automatic Booking System</h1>
         <p className="col-md-8 fs-4">Automates your gym class bookings so you’ll never have to set alarms or race against time again.</p>

@@ -55,9 +55,6 @@ function Dashboard() {
 
   return (
     <div>
-      <h2>Dashboard</h2>
-      <hr />
-
       <div className="row g-5">
         <div className="col-lg-6">
           <h3>My bookings</h3>
