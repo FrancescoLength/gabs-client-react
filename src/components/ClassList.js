@@ -8,6 +8,13 @@ const parseDate = (dateString) => {
     return `${year}-${month}-${day}`;
 };
 
+const getDayOfWeek = (dateString) => {
+    const [day, month, year] = dateString.split('/');
+    const date = new Date(`${year}-${month}-${day}`);
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[date.getDay()];
+};
+
 function ClassList({ classes, onActionSuccess }) {
     const { token } = useAuth();
     const [loadingId, setLoadingId] = useState(null);
@@ -24,7 +31,7 @@ function ClassList({ classes, onActionSuccess }) {
         setError(null);
 
         try {
-            const result = await api.bookClass(token, item.name, dateForApi);
+            const result = await api.bookClass(token, item.name, dateForApi, item.start_time);
             if (result.status === 'success') {
                 alert('Booking successful!');
             } else if (result.status === 'info') {
@@ -44,29 +51,65 @@ function ClassList({ classes, onActionSuccess }) {
         return <p>No classes available in the next few days.</p>;
     }
 
+    // Raggruppa le classi per data
+    const groupedClasses = classes.reduce((acc, item) => {
+        const date = item.date;
+        if (!acc[date]) {
+            acc[date] = [];
+        }
+        acc[date].push(item);
+        return acc;
+    }, {});
+
     return (
         <>
             {error && <div className="alert alert-danger">{error}</div>}
-            <div className="list-group">
-                {classes.map((item, index) => {
-                    const isLoading = loadingId === (item.name + item.date);
-                    return (
-                        <div key={index} className="list-group-item list-group-item-action flex-column align-items-start">
-                            <div className="d-flex w-100 justify-content-between">
-                                <h5 className="mb-1">{item.name}</h5>
-                                <small>{item.date}</small>
-                            </div>
-                            <p className="mb-1">Time: {item.start_time} - {item.end_time} - Duration: {item.duration} minutes - Instructor: {item.instructor || 'N/D'} - Available Spaces: <strong className="fs-5">{item.available_spaces}</strong></p>
-                            <button 
-                                className="btn btn-primary btn-sm" 
-                                onClick={() => handleBook(item)}
-                                disabled={isLoading}
+            <div className="accordion" id="liveBookingAccordion">
+                {Object.keys(groupedClasses).map(date => (
+                    <div className="accordion-item" key={date}>
+                        <h2 className="accordion-header" id={`heading${date.replace(/\//g, '' )}`}>
+                            <button
+                                className="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target={`#collapse${date.replace(/\//g, '' )}`}
+                                aria-expanded="false"
+                                aria-controls={`collapse${date.replace(/\//g, '' )}`}
                             >
-                                {isLoading ? <span className="spinner-border spinner-border-sm"></span> : (item.available_spaces < 1 ? 'Book Waitinglist' : 'Book')}
+                                {getDayOfWeek(date)} - {date}
                             </button>
+                        </h2>
+                        <div
+                            id={`collapse${date.replace(/\//g, '' )}`}
+                            className="accordion-collapse collapse"
+                            aria-labelledby={`heading${date.replace(/\//g, '' )}`}
+                            data-bs-parent="#liveBookingAccordion"
+                        >
+                            <div className="accordion-body">
+                                <div className="list-group">
+                                    {groupedClasses[date].map((item, index) => {
+                                        const isLoading = loadingId === (item.name + item.date);
+                                        return (
+                                            <div key={index} className="list-group-item list-group-item-action flex-column align-items-start">
+                                                <div className="d-flex w-100 justify-content-between">
+                                                    <h5 className="mb-1">{item.name}</h5>
+                                                </div>
+                                                <p className="mb-1">Time: {item.start_time} - {item.end_time} - Duration: {item.duration} minutes - Instructor: {item.instructor || 'N/D'} - Available Spaces: <strong className="fs-5">{item.available_spaces}</strong></p>
+                                                <button
+                                                    className="btn btn-primary btn-sm"
+                                                    onClick={() => handleBook(item)}
+                                                    disabled={isLoading}
+                                                >
+                                                    {isLoading ? <span className="spinner-border spinner-border-sm"></span> : (item.available_spaces < 1 ? 'Book Waitinglist' : 'Book')}
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
                         </div>
-                    );
-                })}
+                    </div>
+                ))}
             </div>
         </>
     );

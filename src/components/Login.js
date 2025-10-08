@@ -19,7 +19,7 @@ function Login() {
 
     try {
       await login(email, password);
-      navigate('/dashboard'); // Redirect to the dashboard after login
+      navigate('/auto-booking'); // Redirect to the auto-booking after login
     } catch (err) {
       setError(err.message);
     } finally {

@@ -36,7 +36,7 @@ function MyBookings({ bookings, onActionSuccess }) {
         setError(null);
 
         try {
-            await api.cancelBooking(token, booking.name, dateForApi);
+            await api.cancelBooking(token, booking.name, dateForApi, booking.time);
             alert('Cancellation successful!');
             onActionSuccess(); // Ricarica i dati nella dashboard
         } catch (err) {

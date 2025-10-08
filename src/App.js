@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
-import Dashboard from './components/Dashboard';
+import LiveBookingPage from './components/LiveBookingPage'; // Import new page
+import AutoBookingPage from './components/AutoBookingPage';   // Import new page
 import ProtectedRoute from './components/ProtectedRoute';
 import hackedLogo from './gabs_logo.png'; // Import the image
 import './App.css';
@@ -41,7 +42,10 @@ function Layout() {
               {isLoggedIn ? (
                 <>
                   <li className="nav-item">
-                    <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                    <Link className="nav-link" to="/live-booking">Live Booking</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/auto-booking">Auto Booking</Link>
                   </li>
                   <li className="nav-item">
                     <button className="btn btn-link nav-link" onClick={logout}>Logout</button>
@@ -61,10 +65,18 @@ function Layout() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route 
-            path="/dashboard" 
+            path="/live-booking" 
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <LiveBookingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path="/auto-booking" 
+            element={
+              <ProtectedRoute>
+                <AutoBookingPage />
               </ProtectedRoute>
             }
           />

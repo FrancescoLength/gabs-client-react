@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 import MyBookings from './MyBookings';
 import ClassList from './ClassList';
+
 
 const parseBookingDate = (dateString) => {
     const parts = dateString.split(' ');
@@ -26,8 +26,9 @@ const parseAvailableClassDate = (dateString) => {
     return `${year}-${month}-${day}`;
 };
 
-function Dashboard() {
-  const { token } = useAuth();
+function LiveBookingPage() {
+  const { token, logout } = useAuth(); // Get logout from useAuth
+  
   const [myBookings, setMyBookings] = useState([]);
   const [availableClasses, setAvailableClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,14 +41,12 @@ function Dashboard() {
       setLoading(true);
       setError(null);
 
-      const [bookingsData, classesData] = await Promise.all([
-        api.getMyBookings(token),
-        api.getClasses(token)
-      ]);
+      const bookingsData = await api.getMyBookings(token);
+      const classesData = await api.getClasses(token);
 
-      const bookedClassesSet = new Set(bookingsData.map(b => `${b.name}|${parseBookingDate(b.date)}`));
+      const bookedClassesSet = new Set(bookingsData.map(b => `${b.name}|${parseBookingDate(b.date)}|${b.time}`));
 
-      const filteredClasses = classesData.filter(c => !bookedClassesSet.has(`${c.name}|${parseAvailableClassDate(c.date)}`));
+      const filteredClasses = classesData.filter(c => !bookedClassesSet.has(`${c.name}|${parseAvailableClassDate(c.date)}|${c.start_time}`));
 
       setMyBookings(bookingsData);
       setAvailableClasses(filteredClasses);
@@ -74,7 +73,7 @@ function Dashboard() {
   }
 
   if (error) {
-    return <p>Loading data...</p>;
+    return <p>Error: {error}</p>;
   }
 
   return (
@@ -93,4 +92,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default LiveBookingPage;

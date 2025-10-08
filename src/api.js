@@ -71,8 +71,8 @@ export const getMyBookings = (token) => {
  * @param {string} className The class name.
  * @param {string} date The class date in YYYY-MM-DD format.
  */
-export const bookClass = (token, className, date) => {
-  const payload = { class_name: className, date };
+export const bookClass = (token, className, date, time) => {
+  const payload = { class_name: className, date, time };
   return fetchWithAuth('/book', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -86,11 +86,65 @@ export const bookClass = (token, className, date) => {
  * @param {string} className The class name.
  * @param {string} date The class date in YYYY-MM-DD format.
  */
-export const cancelBooking = (token, className, date) => {
-    const payload = { class_name: className, date };
+export const cancelBooking = (token, className, date, time) => {
+    const payload = { class_name: className, date, time };
     return fetchWithAuth('/cancel', token, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
     });
+};
+
+/**
+ * Retrieves the static timetable data.
+ * @param {string} token The user's JWT token.
+ */
+export const getStaticClasses = (token) => {
+  return fetchWithAuth('/static_classes', token);
+};
+
+/**
+ * Schedules an automatic booking for a class.
+ * @param {string} token The user's JWT token.
+ * @param {string} className The class name.
+ * @param {string} dayOfWeek The day of the week for recurring bookings (e.g., 'Monday').
+ * @param {string} time The target time for the class in HH:MM format.
+ * @param {string} instructor The instructor's name.
+ * @param {boolean} isRecurring Whether the booking is recurring.
+ * @param {string} date Optional: The target date for a single booking in YYYY-MM-DD format.
+ */
+export const scheduleAutoBook = (token, className, dayOfWeek, time, instructor) => {
+  const payload = { 
+    class_name: className, 
+    time: time,
+    day_of_week: dayOfWeek,
+    instructor: instructor
+  };
+  return fetchWithAuth('/schedule_auto_book', token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+};
+
+/**
+ * Retrieves all scheduled automatic bookings for the current user.
+ * @param {string} token The user's JWT token.
+ */
+export const getAutoBookings = (token) => {
+  return fetchWithAuth('/auto_bookings', token);
+};
+
+/**
+ * Cancels a scheduled automatic booking.
+ * @param {string} token The user's JWT token.
+ * @param {number} bookingId The ID of the auto-booking to cancel.
+ */
+export const cancelAutoBooking = (token, bookingId) => {
+  const payload = { booking_id: bookingId };
+  return fetchWithAuth('/cancel_auto_book', token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 };
