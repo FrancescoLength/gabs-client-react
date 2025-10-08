@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 
@@ -8,22 +8,80 @@ const parseDate = (dateString) => {
     const parts = dateString.split(' ');
     if (parts.length < 3) return null;
 
-    const day = parts[1].replace(/\D/g, ''); // Estrae solo i numeri (es. da "6th" a "6")
+    const day = parseInt(parts[1].replace(/\D/g, ''), 10); // Estrae solo i numeri (es. da "6th" a "6")
     const monthName = parts[2];
-    const year = new Date().getFullYear(); // Assume l'anno corrente
+    const currentYear = new Date().getFullYear();
 
-    const monthMap = { 'january': '01', 'february': '02', 'march': '03', 'april': '04', 'may': '05', 'june': '06', 'july': '07', 'august': '08', 'september': '09', 'october': '10', 'november': '11', 'december': '12' };
+    const monthMap = { 'january': 0, 'february': 1, 'march': 2, 'april': 3, 'may': 4, 'june': 5, 'july': 6, 'august': 7, 'september': 8, 'october': 9, 'november': 10, 'december': 11 };
     const month = monthMap[monthName.toLowerCase()];
 
-    if (!month || !day) return null;
+    if (isNaN(day) || month === undefined) return null;
 
-    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    // Try to determine the correct year
+    let year = currentYear;
+    // Use Date.UTC to avoid timezone issues when creating the date object
+    const testDate = new Date(Date.UTC(year, month, day));
+
+    // If the parsed date is in the past, assume it's for next year
+    // Compare with current date in UTC to be consistent
+    const nowUtc = new Date();
+    const nowUtcYear = nowUtc.getUTCFullYear();
+    const nowUtcMonth = nowUtc.getUTCMonth();
+    const nowUtcDay = nowUtc.getUTCDate();
+
+    if (testDate < nowUtc && (nowUtcMonth > month || (nowUtcMonth === month && nowUtcDay > day))) {
+        year++;
+    }
+
+    // Create the final date object using UTC
+    return new Date(Date.UTC(year, month, day));
+};
+
+const getClassDateTime = (bookingDateString, bookingTimeString) => {
+    const dateObj = parseDate(bookingDateString);
+    if (!dateObj) return null;
+
+    const [hours, minutes] = bookingTimeString.split(':').map(Number);
+    dateObj.setHours(hours, minutes, 0, 0);
+    return dateObj;
+};
+
+const calculateTimeRemaining = (targetDateTime) => {
+    const now = new Date();
+    const difference = targetDateTime.getTime() - now.getTime();
+
+    if (difference <= 0) {
+        return { total: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+
+    const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((difference / 1000 / 60) % 60);
+    const seconds = Math.floor((difference / 1000) % 60);
+
+    return { total: difference, hours, minutes, seconds };
 };
 
 function MyBookings({ bookings, onActionSuccess }) {
     const { token } = useAuth();
     const [loadingId, setLoadingId] = useState(null); // ID della classe in caricamento
     const [error, setError] = useState(null);
+    const [countdownStates, setCountdownStates] = useState({});
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const newCountdownStates = {};
+            bookings.forEach(booking => {
+                const classDateTime = getClassDateTime(booking.date, booking.time);
+                if (classDateTime) {
+                    const cancellationDeadline = new Date(classDateTime.getTime() - (180 * 60 * 1000));
+                    newCountdownStates[booking.name + booking.date + booking.time] = calculateTimeRemaining(cancellationDeadline);
+                }
+            });
+            setCountdownStates(newCountdownStates);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [bookings]);
 
     const handleCancel = async (booking) => {
         const dateForApi = parseDate(booking.date);
@@ -36,7 +94,7 @@ function MyBookings({ bookings, onActionSuccess }) {
         setError(null);
 
         try {
-            await api.cancelBooking(token, booking.name, dateForApi, booking.time);
+            await api.cancelBooking(token, booking.name, dateForApi.toISOString().split('T')[0], booking.time);
             alert('Cancellation successful!');
             onActionSuccess(); // Ricarica i dati nella dashboard
         } catch (err) {
@@ -56,24 +114,47 @@ function MyBookings({ bookings, onActionSuccess }) {
             <div className="list-group">
                 {bookings.map((booking, index) => {
                     const isLoading = loadingId === (booking.name + booking.date);
+                    const bookingKey = booking.name + booking.date + booking.time;
+                    const countdown = countdownStates[bookingKey];
+                    const isNearDeadline = countdown && countdown.total > 0 && countdown.total <= (60 * 60 * 1000); // 60 minutes before deadline
+                    const isPastDeadline = countdown && countdown.total <= 0;
+
+                    let cardClass = "list-group-item list-group-item-action flex-column align-items-start";
+                    if (isNearDeadline) {
+                        cardClass += " bg-warning"; // Yellow background for near deadline
+                    } else if (isPastDeadline) {
+                        cardClass += " bg-danger text-white"; // Red background for past deadline
+                    }
+
                     return (
-                        <div key={index} className="list-group-item list-group-item-action flex-column align-items-start">
+                        <div key={index} className={cardClass}>
                             <div className="d-flex w-100 justify-content-between">
                                 <h5 className="mb-1">{booking.name}</h5>
                                 <small>{booking.date}</small>
                             </div>
                             <p className="mb-1">Time: {booking.time}</p>
+                            {countdown && countdown.total > 0 && (
+                                <p className="mb-1 text-muted">
+                                    Cancel by: {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
+                                </p>
+                            )}
+                            {isPastDeadline && (
+                                <p className="mb-1 text-danger fw-bold">Scaduto! Potrebbe essere applicata una multa.</p>
+                            )}
                             <div className="d-flex justify-content-between align-items-center">
                                 <span className={`badge bg-${booking.status === 'Booked' ? 'success' : 'warning'}`}>
                                     {booking.status}
                                 </span>
-                                <button 
-                                    className="btn btn-danger btn-sm" 
-                                    onClick={() => handleCancel(booking)}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? <span className="spinner-border spinner-border-sm"></span> : 'Cancel'}
-                                </button>
+                                {/* Conditionally render the Cancel button */}
+                                {!isPastDeadline && (
+                                    <button 
+                                        className="btn btn-danger btn-sm" 
+                                        onClick={() => handleCancel(booking)}
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? <span className="spinner-border spinner-border-sm"></span> : 'Cancel'}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     );

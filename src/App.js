@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Login';
@@ -21,7 +21,66 @@ function App() {
 
 // Componente che gestisce il layout e le rotte
 function Layout() {
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, token } = useAuth();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      subscribeToPushNotifications();
+    }
+  }, [isLoggedIn, token]);
+
+  const subscribeToPushNotifications = async () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      console.warn('Push notifications not supported.');
+      return;
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      let subscription = await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        const response = await fetch('/api/vapid-public-key'); // Get VAPID public key from backend
+        const vapidPublicKey = await response.text();
+        const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: convertedVapidKey,
+        });
+      }
+
+      // Send subscription to your backend
+      await fetch('/api/subscribe-push', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(subscription),
+      });
+
+      console.log('Push subscription successful:', subscription);
+    } catch (error) {
+      console.error('Push subscription failed:', error);
+    }
+  };
+
+  // Utility function to convert VAPID key
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
 
   return (
     <div className="App">
