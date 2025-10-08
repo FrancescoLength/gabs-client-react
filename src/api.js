@@ -1,4 +1,4 @@
-const API_URL = '/api'; // Thanks to the proxy, the full IP is not needed
+const API_URL = process.env.REACT_APP_API_URL || '/api';
 
 /**
  * Executes user login.
