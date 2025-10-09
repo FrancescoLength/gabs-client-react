@@ -140,12 +140,6 @@ function Layout() {
 
 function HomePage() {
   const { isLoggedIn } = useAuth();
-
-  // If the user is logged in, redirect them to the main functional page.
-  if (isLoggedIn) {
-    return <Navigate to="/auto-booking" replace />;
-  }
-
   return (
     <div>
       {/* Main Jumbotron */}
