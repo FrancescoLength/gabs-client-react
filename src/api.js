@@ -1,4 +1,4 @@
-const API_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api` : '/api';
+export const API_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api` : '/api';
 
 /**
  * Executes user login.
@@ -148,5 +148,34 @@ export const cancelAutoBooking = (token, bookingId) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
+  });
+};
+
+/**
+ * Retrieves the VAPID public key from the server.
+ * @returns {Promise<string>} The VAPID public key as text.
+ */
+export const getVapidPublicKey = async () => {
+  const response = await fetch(`${API_URL}/vapid-public-key`, {
+    headers: {
+      'ngrok-skip-browser-warning': 'true',
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to get VAPID public key');
+  }
+  return response.text();
+};
+
+/**
+ * Sends the push subscription to the backend.
+ * @param {string} token The user's JWT token.
+ * @param {object} subscription The PushSubscription object.
+ */
+export const subscribeToPush = (token, subscription) => {
+  return fetchWithAuth('/subscribe-push', token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(subscription),
   });
 };
