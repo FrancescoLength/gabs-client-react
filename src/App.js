@@ -186,7 +186,7 @@ function HomePage() {
               <li>✅ <strong>Automatic Booking:</strong> Set up your favorite classes once and never think about them again.</li>
               <li>🔔 <strong>Smart Notifications:</strong> Get push reminders to cancel a class and avoid penalties.</li>
               <li>📅 <strong>Live Schedule:</strong> Browse the full class calendar right from here.</li>
-              <li>👨‍🏫 <strong>Filter by Instructor:</strong> Find all classes taught by your favorite instructor.</li>
+              <li>👨‍🏫 <strong>Filter by Instructor:</strong> Find all classes taught by your favorite instructor. <strong>(coming soon)</strong></li>
             </ul>
           </div>
         </div>
@@ -220,6 +220,8 @@ function HomePage() {
           <div className="h-100 p-5 bg-light border rounded-3">
             <h4>A Free & Open Source Project ❤️</h4>
             <p>GABS is an open-source project born from a passion for technology and fitness. This service is, and always will be, <strong>completely free</strong>. If you're a developer, we welcome you to contribute on GitHub! 👩‍💻</p>
+            <p>Check out the <a href="https://github.com/FrancescoLength/gabs-api-server">backend code</a> 🛠️ (it runs on a Raspberry Pi Zero)</p>
+            <p>Check out the <a href="https://github.com/FrancescoLength/gabs-client-react">frontend code</a> 🎨 </p>
           </div>
         </div>
       </div>
