@@ -7,6 +7,7 @@ import AutoBookingPage from './components/AutoBookingPage';   // Import new page
 import ProtectedRoute from './components/ProtectedRoute';
 import hackedLogo from './gabs_logo.png'; // Import the image
 import './App.css';
+import { getVapidPublicKey, subscribeToPush } from './api';
 
 // Wrapper per l'intera App
 function App() {
@@ -40,8 +41,7 @@ function Layout() {
       let subscription = await registration.pushManager.getSubscription();
 
       if (!subscription) {
-        const response = await fetch('/api/vapid-public-key'); // Get VAPID public key from backend
-        const vapidPublicKey = await response.text();
+        const vapidPublicKey = await getVapidPublicKey();
         const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
 
         subscription = await registration.pushManager.subscribe({
@@ -50,15 +50,7 @@ function Layout() {
         });
       }
 
-      // Send subscription to your backend
-      await fetch('/api/subscribe-push', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(subscription),
-      });
+      await subscribeToPush(token, subscription);
 
       console.log('Push subscription successful:', subscription);
     } catch (error) {
