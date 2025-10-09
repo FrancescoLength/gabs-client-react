@@ -1,11 +1,10 @@
-
 /* General Styling */
 :root {
   --primary-brand-color: rgb(230, 30, 33); /* Professional Blue */
   --secondary-accent-color: rgb(230, 30, 33); /* Vibrant Red */
   --main-bg-color: #ffffff; /* White background */
   --main-text-color: #212529; /* Dark grey for main text */
-  --navbar-bg-color: #fffff; /* White navbar */
+  --navbar-bg-color: #ffffff; /* White navbar */
   --button-border-radius: 4px;
   --card-border-radius: 8px;
 }
@@ -80,4 +79,10 @@ body {
 /* Spinner color */
 .spinner-border {
     color: var(--primary-brand-color);
+}
+
+/* Custom background color using the brand's primary color */
+.bg-brand-primary {
+  background-color: var(--primary-brand-color);
+  color: #ffffff; /* Assuming white text is desired on the brand color */
 }
