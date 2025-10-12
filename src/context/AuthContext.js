@@ -12,8 +12,11 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log("JWT Payload:", payload); // Aggiunto per debug
         setUser(payload.sub);
-        setIsAdmin(payload.sub === 'france.schino@live.it');
+        const admin = payload.sub === 'france.schino@live.it';
+        console.log("Is Admin:", admin); // Aggiunto per debug
+        setIsAdmin(admin);
       } catch (e) {
         console.error("Failed to decode token", e);
         logout();
