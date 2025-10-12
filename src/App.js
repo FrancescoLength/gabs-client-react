@@ -99,6 +99,11 @@ function Layout() {
                   <li className="nav-item">
                     <Link className="nav-link" to="/auto-booking">Auto Booking</Link>
                   </li>
+                  {isAdmin && (
+                    <li className="nav-item">
+                      <Link className="nav-link" to="/admin-logs">Admin Logs</Link>
+                    </li>
+                  )}
                   <li className="nav-item">
                     <button className="btn btn-link nav-link" onClick={logout}>Logout</button>
                   </li>
@@ -129,6 +134,14 @@ function Layout() {
             element={
               <ProtectedRoute>
                 <AutoBookingPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path="/admin-logs" 
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <AdminLogsPage />
               </ProtectedRoute>
             }
           />
