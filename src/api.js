@@ -179,3 +179,21 @@ export const subscribeToPush = (token, subscription) => {
     body: JSON.stringify(subscription),
   });
 };
+
+// --- Admin Functions ---
+
+export const getAdminLogs = (token) => {
+  return fetchWithAuth('/admin/logs', token);
+};
+
+export const getAdminAutoBookings = (token) => {
+  return fetchWithAuth('/admin/auto_bookings', token);
+};
+
+export const getAdminPushSubscriptions = (token) => {
+  return fetchWithAuth('/admin/push_subscriptions', token);
+};
+
+export const getAdminStatus = (token) => {
+  return fetchWithAuth('/admin/status', token);
+};

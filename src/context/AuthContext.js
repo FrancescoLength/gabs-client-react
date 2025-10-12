@@ -1,12 +1,28 @@
-
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import * as api from '../api';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  // Leggiamo il token dal localStorage per mantenere l'utente loggato
   const [token, setToken] = useState(localStorage.getItem('authToken'));
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUser(payload.sub);
+        setIsAdmin(payload.sub === 'france.schino@live.it');
+      } catch (e) {
+        console.error("Failed to decode token", e);
+        logout();
+      }
+    } else {
+      setUser(null);
+      setIsAdmin(false);
+    }
+  }, [token]);
 
   const login = async (email, password) => {
     const data = await api.login(email, password);
@@ -24,6 +40,8 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     token,
+    user,
+    isAdmin,
     isLoggedIn: !!token,
     login,
     logout,
@@ -32,7 +50,6 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Hook personalizzato per accedere facilmente al contesto
 export const useAuth = () => {
   return useContext(AuthContext);
 };

@@ -5,6 +5,7 @@ import Login from './components/Login';
 import LiveBookingPage from './components/LiveBookingPage'; // Import new page
 import AutoBookingPage from './components/AutoBookingPage';   // Import new page
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminLogsPage from './components/AdminLogsPage';
 import hackedLogo from './gabs_logo.png'; // Import the image
 import './App.css';
 import { getVapidPublicKey, subscribeToPush } from './api';
