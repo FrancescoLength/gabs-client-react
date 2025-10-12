@@ -24,7 +24,6 @@ function App() {
 // Componente che gestisce il layout e le rotte
 function Layout() {
   const { isLoggedIn, logout, token, isAdmin } = useAuth();
-  console.log("isAdmin in Layout:", isAdmin);
 
   useEffect(() => {
     if (isLoggedIn) {
