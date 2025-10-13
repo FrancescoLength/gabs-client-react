@@ -22,6 +22,8 @@ function App() {
   );
 }
 
+export default App;
+
 // Componente che gestisce il layout e le rotte
 function Layout() {
   const { isLoggedIn, logout, token, isAdmin } = useAuth();
