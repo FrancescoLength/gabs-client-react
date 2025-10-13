@@ -51,14 +51,15 @@ const calculateTimeRemaining = (targetDateTime) => {
     const difference = targetDateTime.getTime() - now.getTime();
 
     if (difference <= 0) {
-        return { total: 0, hours: 0, minutes: 0, seconds: 0 };
+        return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
     }
 
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
     const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
     const minutes = Math.floor((difference / 1000 / 60) % 60);
     const seconds = Math.floor((difference / 1000) % 60);
 
-    return { total: difference, hours, minutes, seconds };
+    return { total: difference, days, hours, minutes, seconds };
 };
 
 function MyBookings({ bookings, onActionSuccess }) {
@@ -135,7 +136,7 @@ function MyBookings({ bookings, onActionSuccess }) {
                             <p className="mb-1">Time: {booking.time}</p>
                             {countdown && countdown.total > 0 && (
                                 <p className="mb-1 text-muted">
-                                    Cancel by: {countdown.hours}h {countdown.minutes}m {countdown.seconds}s
+                                    Cancel by: {countdown.days > 0 && `${countdown.days}d `}{countdown.hours}h {countdown.minutes}m {countdown.seconds}s
                                 </p>
                             )}
                             {isPastDeadline && (
