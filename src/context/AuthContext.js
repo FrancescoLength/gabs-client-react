@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
         setUser(payload.sub);
-        const admin = payload.sub === 'france.schino@live.it';
+        const admin = payload.sub === process.env.REACT_APP_ADMIN_EMAIL;
         setIsAdmin(admin);
       } catch (e) {
         console.error("Failed to decode token", e);

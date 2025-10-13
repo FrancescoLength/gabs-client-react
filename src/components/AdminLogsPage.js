@@ -78,19 +78,19 @@ const AdminLogsPage = () => {
               </thead>
               <tbody>
                 {autoBookings.map(b => (
-                  <tr key={b[0]}>
-                    <td>{b[0]}</td>
-                    <td>{b[1]}</td>
-                    <td>{b[2]}</td>
-                    <td>{b[3]}</td>
-                    <td>{b[8]}</td>
-                    <td>{b[9]}</td>
-                    <td>{b[4]}</td>
-                    <td>{b[10]}</td>
-                    <td>{new Date(b[5] * 1000).toLocaleString()}</td>
-                    <td>{b[6] ? new Date(b[6] * 1000).toLocaleString() : 'N/A'}</td>
-                    <td>{b[7]}</td>
-                    <td>{b[11]}</td>
+                  <tr key={b.id}>
+                    <td>{b.id}</td>
+                    <td>{b.username}</td>
+                    <td>{b.class_name}</td>
+                    <td>{b.target_time}</td>
+                    <td>{b.day_of_week}</td>
+                    <td>{b.instructor}</td>
+                    <td>{b.status}</td>
+                    <td>{b.last_booked_date}</td>
+                    <td>{new Date(b.created_at * 1000).toLocaleString()}</td>
+                    <td>{b.last_attempt_at ? new Date(b.last_attempt_at * 1000).toLocaleString() : 'N/A'}</td>
+                    <td>{b.retry_count}</td>
+                    <td>{b.notification_sent}</td>
                   </tr>
                 ))}
               </tbody>
