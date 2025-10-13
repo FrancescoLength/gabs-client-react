@@ -1,6 +1,6 @@
 # GABS Client React Application
 
-This is the frontend React application for the Gym Booking API (GABS). It provides a user interface to interact with the GABS API, allowing users to manage their gym class bookings, schedule auto-bookings, and receive push notifications.
+This is the frontend React application for the Gym Automatic Booking System (GABS). It provides a user interface to interact with the GABS API, allowing users to manage their gym class bookings, schedule auto-bookings, and receive push notifications.
 
 ## Features
 
@@ -10,12 +10,14 @@ This is the frontend React application for the Gym Booking API (GABS). It provid
 -   View personal upcoming bookings.
 -   Schedule and manage recurring auto-bookings.
 -   Receive push notifications for cancellation reminders.
+-   **Admin Panel:** Dedicated section for administrators to monitor backend logs, auto-bookings, push subscriptions, and server status.
 
 ## Setup and Installation
 
 1.  **Prerequisites:**
     -   Node.js (LTS version recommended)
     -   npm or Yarn
+    -   **GABS API Server:** Ensure the [GABS API Server](https://github.com/FrancescoLength/gabs-api-server) is set up and running.
 
 2.  **Installation:**
     ```bash
@@ -28,9 +30,18 @@ This is the frontend React application for the Gym Booking API (GABS). It provid
     yarn install
     ```
 
-3.  **Configuration:**
-    -   Ensure the GABS API server is running and accessible.
-    -   The client expects the API to be available at `/api`. If your API is running on a different host or port, you might need to configure a proxy in `package.json` or adjust the `API_URL` in `src/api.js`.
+3.  **Configuration (.env file):**
+    This project uses environment variables for configuration, including the backend API URL and admin email.
+    -   Create a file named `.env` in the root of the `gabs-client-react` directory.
+    -   Copy the content from `.env.example` into your new `.env` file.
+    -   Fill in the required values. **Do NOT commit your `.env` file to Git!**
+
+    ```
+    # Example .env content (fill in your actual values)
+    REACT_APP_API_URL=http://localhost:5000 # Or your ngrok URL, e.g., https://xxxx.ngrok-free.dev
+    REACT_APP_ADMIN_EMAIL=admin@gmail.com # The email address of the admin user
+    ```
+    **Note:** `REACT_APP_API_URL` should point to your running GABS API Server. During local development, this might be `http://localhost:5000` or your `ngrok` URL.
 
 4.  **Running the Application:**
     ```bash
@@ -53,10 +64,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 The page will reload when you make changes.
 You may also see any lint errors in the console.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.
-
 ### `npm run build`
 
 Builds the app for production to the `build` folder.
@@ -64,3 +71,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.
 Your app is ready to be deployed!
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0](LICENSE).

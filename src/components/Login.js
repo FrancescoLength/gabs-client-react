@@ -21,7 +21,8 @@ function Login() {
       await login(email, password);
       navigate('/auto-booking'); // Redirect to the auto-booking after login
     } catch (err) {
-      setError(err.message);
+      console.error("Login API error:", err.message); // Log detailed error for debugging
+      setError("Login failed. Please check your credentials."); // Generic message for user
     } finally {
       setLoading(false);
     }
