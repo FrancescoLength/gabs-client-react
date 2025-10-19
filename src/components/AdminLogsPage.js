@@ -41,6 +41,20 @@ const AdminLogsPage = () => {
       return <div className="alert alert-danger">{error}</div>;
     }
 
+    const getLevelClass = (level) => {
+      switch (level) {
+        case 'INFO':
+          return 'text-info';
+        case 'WARNING':
+          return 'text-warning';
+        case 'ERROR':
+        case 'CRITICAL':
+          return 'text-danger fw-bold';
+        default:
+          return 'text-muted';
+      }
+    };
+
     switch (activeTab) {
       case 'status':
         return status ? (
@@ -52,9 +66,19 @@ const AdminLogsPage = () => {
         ) : <p>Loading...</p>;
       case 'logs':
         return (
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '5px' }}>
-            {logs.join('')}
-          </pre>
+          <div>
+            {logs && logs.logs ? logs.logs.map((log, index) => (
+              <div key={index} className="border-bottom mb-2 pb-2">
+                <div className="d-flex justify-content-between">
+                  <span className={`fw-bold ${getLevelClass(log.level)}`}>{log.level}</span>
+                  <span className="text-muted small">{log.timestamp}</span>
+                </div>
+                <pre className="mb-0" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '0.875em' }}>
+                  {log.message}
+                </pre>
+              </div>
+            )) : <p>Loading logs...</p>}
+          </div>
         );
       case 'autoBookings':
         return (
