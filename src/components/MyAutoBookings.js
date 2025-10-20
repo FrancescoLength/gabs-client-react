@@ -105,7 +105,6 @@ function MyAutoBookings({ onActionSuccess, staticClasses, refreshTrigger }) {
             ) : (
                 <ul className="list-group">
                     {autoBookings.map((booking) => {
-                        console.log('Booking object:', booking);
                         const nextClassTime = getNextOccurrence(booking.day_of_week, booking.target_time, booking.last_booked_date);
                         let countdown = '';
                         if (nextClassTime) {
