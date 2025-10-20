@@ -194,6 +194,14 @@ export const getAdminPushSubscriptions = (token) => {
   return fetchWithAuth('/admin/push_subscriptions', token);
 };
 
+export const getAdminUsers = (token) => {
+  return fetchWithAuth('/admin/users', token);
+};
+
+export const getAdminSessions = (token) => {
+  return fetchWithAuth('/admin/sessions', token);
+};
+
 export const getAdminStatus = (token) => {
   return fetchWithAuth('/admin/status', token);
 };
