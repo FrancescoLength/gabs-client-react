@@ -11,11 +11,11 @@ function MyAutoBookings({ onActionSuccess, staticClasses, refreshTrigger }) {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const getNextOccurrence = (dayOfWeek, startTime, lastBookedDate) => {
-        const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const today = new Date();
         const targetDayIndex = daysOfWeek.indexOf(dayOfWeek);
         
-        let daysUntilTarget = (targetDayIndex - today.getDay() + 8) % 7;
+        let daysUntilTarget = (targetDayIndex - today.getDay() + 7) % 7;
         if (daysUntilTarget === 0 && today.getHours() >= parseInt(startTime.split(':')[0])) {
             daysUntilTarget = 7;
         }
