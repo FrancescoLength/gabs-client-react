@@ -11,51 +11,37 @@ function MyAutoBookings({ onActionSuccess, staticClasses, refreshTrigger }) {
     const [errorMessage, setErrorMessage] = useState(null);
 
     const getNextOccurrence = (dayOfWeek, startTime, lastBookedDate) => {
-        console.log('--- getNextOccurrence Debug ---');
-        console.log('Input: dayOfWeek', dayOfWeek, 'startTime', startTime, 'lastBookedDate', lastBookedDate);
-
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const today = new Date();
-        console.log('today (Date object):', today);
-        console.log('today.getDay():', today.getDay());
-
         const targetDayIndex = daysOfWeek.indexOf(dayOfWeek);
-        console.log('targetDayIndex:', targetDayIndex);
         
         let daysUntilTarget = (targetDayIndex - today.getDay() + 7) % 7;
-        console.log('daysUntilTarget (initial):', daysUntilTarget);
-
-        if (daysUntilTarget === 0 && today.getHours() >= parseInt(startTime.split(':')[0])) {
-            console.log('Class is today and time has passed, advancing by 7 days.');
-            daysUntilTarget = 7;
-        }
-        console.log('daysUntilTarget (after adjustment):', daysUntilTarget);
-
+        
         let nextDate = new Date(today);
         nextDate.setDate(today.getDate() + daysUntilTarget);
-        console.log('nextDate (before time set):', nextDate);
+        nextDate.setHours(parseInt(startTime.split(':')[0]), parseInt(startTime.split(':')[1]), 0, 0);
 
+        // Adjust for classes that have already passed today
+        if (daysUntilTarget === 0 && today.getTime() > nextDate.getTime()) {
+            nextDate.setDate(nextDate.getDate() + 7);
+        }
+
+        // Adjust for classes that were already booked on this date
         if (lastBookedDate) {
-            console.log('lastBookedDate is present:', lastBookedDate);
             const [lbYear, lbMonth, lbDay] = lastBookedDate.split('-').map(Number);
             const lastBooked = new Date(lbYear, lbMonth - 1, lbDay);
-            console.log('lastBooked (Date object):', lastBooked);
             if (nextDate.toDateString() === lastBooked.toDateString()) {
-                console.log('nextDate matches lastBookedDate, advancing by 7 days.');
                 nextDate.setDate(nextDate.getDate() + 7);
             }
         }
-        console.log('nextDate (after lastBookedDate adjustment):', nextDate);
+
+        // Now, ensure the booking window is in the future
+        let bookingOpenTime = new Date(nextDate.getTime() - 48 * 60 * 60 * 1000);
+        while (bookingOpenTime.getTime() < new Date().getTime()) {
+            nextDate.setDate(nextDate.getDate() + 7);
+            bookingOpenTime = new Date(nextDate.getTime() - 48 * 60 * 60 * 1000);
+        }
         
-        const [hour, minute] = startTime.split(':').map(Number);
-        nextDate.setHours(hour, minute, 0, 0);
-        console.log('nextDate (final):', nextDate);
-
-        const bookingOpenTime = new Date(nextDate.getTime() - 48 * 60 * 60 * 1000); // Usa nextDate, non nextClassTime
-        console.log('bookingOpenTime:', bookingOpenTime);
-        const diff = bookingOpenTime.getTime() - new Date().getTime();
-        console.log('diff:', diff);
-
         return nextDate;
     };
 
