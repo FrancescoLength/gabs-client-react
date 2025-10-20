@@ -27,15 +27,17 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const data = await api.login(email, password);
-    if (data.access_token) {
-      setToken(data.access_token);
-      localStorage.setItem('authToken', data.access_token);
+    if (data.token) {
+      setToken(data.token);
+      localStorage.setItem('authToken', data.token);
     }
     return data;
   };
 
   const logout = () => {
     setToken(null);
+    setUser(null);
+    setIsAdmin(false);
     localStorage.removeItem('authToken');
   };
 
