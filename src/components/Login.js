@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Login() {
@@ -9,8 +9,7 @@ function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isLoggedIn } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,7 +18,6 @@ function Login() {
 
     try {
       await login(email, password);
-      navigate('/auto-booking'); // Redirect to the auto-booking after login
     } catch (err) {
       console.error("Login API error:", err.message); // Log detailed error for debugging
       setError("Login failed. Please check your credentials."); // Generic message for user
@@ -27,6 +25,10 @@ function Login() {
       setLoading(false);
     }
   };
+
+  if (isLoggedIn) {
+    return <Navigate to="/auto-booking" replace />;
+  }
 
   return (
     <div className="col-md-6 offset-md-3">
