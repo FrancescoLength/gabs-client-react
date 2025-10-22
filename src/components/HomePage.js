@@ -74,9 +74,10 @@ function HomePage() {
             <h4>Your Security is Our Priority 🛡️</h4>
             <p>Here’s exactly how we handle your credentials:</p>
             <ul>
-              <li><strong>No Permanent Storage:</strong> Your gym credentials are <strong>never saved</strong> to any database. 🙅‍♀️</li>
-              <li><strong>Temporary Use Only:</strong> Used only at login to create a secure, temporary session.</li>
-              <li><strong>Deletion on Logout:</strong> As soon as you log out, all sensitive data is immediately erased. 🗑️</li>
+              <li><strong>Encrypted Storage:</strong> Your gym password is securely encrypted using a unique key and stored in our database.</li>
+              <li><strong>Secure Sessions:</strong> We use your encrypted credentials to maintain a secure, temporary session with your gym's website.</li>
+              <li><strong>Strict Access:</strong> Only the automated booking system can access and decrypt your password when necessary for booking tasks.</li>
+              <li><strong>Deletion on Logout:</strong> Upon logout, your encrypted password and session data are immediately removed from our database. 🗑️</li>
             </ul>
           </div>
         </div>
