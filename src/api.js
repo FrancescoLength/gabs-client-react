@@ -16,12 +16,17 @@ export const login = async (email, password) => {
     body: JSON.stringify({ username: email, password }),
   });
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || 'Login failed');
-  }
-
   return response.json();
+};
+
+/**
+ * Executes user logout on the backend.
+ * @param {string} token The user's JWT token.
+ */
+export const logout = (token) => {
+  return fetchWithAuth('/logout', token, {
+    method: 'POST',
+  });
 };
 
 /**

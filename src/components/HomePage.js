@@ -50,7 +50,6 @@ function HomePage() {
               <li>✅ <strong>Automatic Booking:</strong> Set up your favorite classes once and never think about them again.</li>
               <li>🔔 <strong>Smart Notifications:</strong> Get push reminders to cancel a class and avoid penalties.</li>
               <li>📅 <strong>Live Schedule:</strong> Browse the full class calendar right from here.</li>
-              <li>👨‍🏫 <strong>Filter by Instructor:</strong> Find all classes taught by your favorite instructor. <strong>(coming soon)</strong></li>
             </ul>
           </div>
         </div>
