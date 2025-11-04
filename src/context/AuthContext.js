@@ -34,7 +34,16 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      // Perform a backend logout to clear the session from the server.
+      await api.logout(token);
+    } catch (error) {
+      // Log the error but proceed with client-side logout anyway,
+      // as the user should be logged out of the UI regardless.
+      console.error("Backend logout failed, proceeding with client-side cleanup:", error);
+    }
+    // Clear client-side authentication state.
     setToken(null);
     localStorage.removeItem('authToken');
   };
