@@ -5,6 +5,7 @@ import * as api from '../api';
 const AdminLogsPage = () => {
   const { token } = useAuth();
   const [logs, setLogs] = useState([]);
+  const [sshTunnelUrl, setSshTunnelUrl] = useState(null);
   const [autoBookings, setAutoBookings] = useState([]);
   const [pushSubscriptions, setPushSubscriptions] = useState([]);
   const [users, setUsers] = useState([]);
@@ -18,8 +19,9 @@ const AdminLogsPage = () => {
       try {
         setError(null);
         if (activeTab === 'logs') {
-          const logsData = await api.getAdminLogs(token);
-          setLogs(logsData);
+          const { logs, ssh_tunnel_url } = await api.getAdminLogs(token);
+          setLogs(logs);
+          setSshTunnelUrl(ssh_tunnel_url);
         } else if (activeTab === 'autoBookings') {
           const autoBookingsData = await api.getAdminAutoBookings(token);
           setAutoBookings(autoBookingsData);
@@ -75,7 +77,12 @@ const AdminLogsPage = () => {
       case 'logs':
         return (
           <div>
-            {logs && logs.logs ? logs.logs.map((log, index) => (
+            {sshTunnelUrl && (
+              <div className="alert alert-info">
+                <strong>SSH Tunnel:</strong> {sshTunnelUrl}
+              </div>
+            )}
+            {logs ? logs.map((log, index) => (
               <div key={index} className="border-bottom mb-2 pb-2">
                 <div className="d-flex justify-content-between">
                   <span className={`fw-bold ${getLevelClass(log.level)}`}>{log.level}</span>
