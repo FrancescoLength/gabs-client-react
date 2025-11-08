@@ -25,7 +25,6 @@ const parseDate = (dateString) => {
     // If the parsed date is in the past, assume it's for next year
     // Compare with current date in UTC to be consistent
     const nowUtc = new Date();
-    const nowUtcYear = nowUtc.getUTCFullYear();
     const nowUtcMonth = nowUtc.getUTCMonth();
     const nowUtcDay = nowUtc.getUTCDate();
 

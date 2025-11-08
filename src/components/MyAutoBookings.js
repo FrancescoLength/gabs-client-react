@@ -57,7 +57,7 @@ function MyAutoBookings({ onActionSuccess, staticClasses, refreshTrigger }) {
         } finally {
             setLoading(false);
         }
-    }, [token, refreshTrigger]);
+    }, [token]);
 
     useEffect(() => {
         fetchAutoBookings();
