@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsAdmin(false);
     }
-  }, [token]);
+  }, [token, logout]);
 
   const login = async (email, password) => {
     const data = await api.login(email, password);
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
     isLoggedIn: !!token,
     login,
     logout,
-  }), [token, user, isAdmin]);
+  }), [token, user, isAdmin, logout]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

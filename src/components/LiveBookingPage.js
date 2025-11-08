@@ -27,7 +27,7 @@ const parseAvailableClassDate = (dateString) => {
 };
 
 function LiveBookingPage() {
-  const { token, logout } = useAuth(); // Get logout from useAuth
+  const { token } = useAuth(); // Get logout from useAuth
   
   const [myBookings, setMyBookings] = useState([]);
   const [availableClasses, setAvailableClasses] = useState([]);

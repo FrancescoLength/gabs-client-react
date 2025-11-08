@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 
 function AutoBookingPage() {
-  const { token, logout } = useAuth();
+  const { token } = useAuth();
   const [staticClasses, setStaticClasses] = useState({});
   const [loadingStaticClasses, setLoadingStaticClasses] = useState(true);
   const [errorStaticClasses, setErrorStaticClasses] = useState(null);
