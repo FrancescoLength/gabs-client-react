@@ -28,13 +28,7 @@ export default App;
 function Layout() {
   const { isLoggedIn, logout, token, isAdmin } = useAuth();
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      subscribeToPushNotifications();
-    }
-  }, [isLoggedIn, token, subscribeToPushNotifications]);
-
-  const subscribeToPushNotifications = async () => {
+  const subscribeToPushNotifications = useCallback(async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
       console.warn('Push notifications not supported.');
       return;
@@ -60,7 +54,13 @@ function Layout() {
     } catch (error) {
       console.error('Push subscription failed:', error);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      subscribeToPushNotifications();
+    }
+  }, [isLoggedIn, subscribeToPushNotifications]);
 
   // Utility function to convert VAPID key
   function urlBase64ToUint8Array(base64String) {

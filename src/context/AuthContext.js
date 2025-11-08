@@ -8,6 +8,20 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
+  const logout = useCallback(async () => {
+    try {
+      // Perform a backend logout to clear the session from the server.
+      await api.logout(token);
+    } catch (error) {
+      // Log the error but proceed with client-side logout anyway,
+      // as the user should be logged out of the UI regardless.
+      console.error("Backend logout failed, proceeding with client-side cleanup:", error);
+    }
+    // Clear client-side authentication state.
+    setToken(null);
+    localStorage.removeItem('authToken');
+  }, [token]);
+
   useEffect(() => {
     if (token) {
       try {
@@ -32,20 +46,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('authToken', data.access_token);
     }
     return data;
-  };
-
-  const logout = async () => {
-    try {
-      // Perform a backend logout to clear the session from the server.
-      await api.logout(token);
-    } catch (error) {
-      // Log the error but proceed with client-side logout anyway,
-      // as the user should be logged out of the UI regardless.
-      console.error("Backend logout failed, proceeding with client-side cleanup:", error);
-    }
-    // Clear client-side authentication state.
-    setToken(null);
-    localStorage.removeItem('authToken');
   };
 
   const value = useMemo(() => ({
