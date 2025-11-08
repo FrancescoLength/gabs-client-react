@@ -5,7 +5,7 @@ import * as api from '../api';
 const AdminLogsPage = () => {
   const { token } = useAuth();
   const [logs, setLogs] = useState([]);
-  const [sshTunnelUrl, setSshTunnelUrl] = useState(null);
+  const [sshTunnelCommand, setSshTunnelCommand] = useState(null);
   const [autoBookings, setAutoBookings] = useState([]);
   const [pushSubscriptions, setPushSubscriptions] = useState([]);
   const [users, setUsers] = useState([]);
@@ -19,9 +19,8 @@ const AdminLogsPage = () => {
       try {
         setError(null);
         if (activeTab === 'logs') {
-          const { logs, ssh_tunnel_url } = await api.getAdminLogs(token);
+          const { logs } = await api.getAdminLogs(token);
           setLogs(logs);
-          setSshTunnelUrl(ssh_tunnel_url);
         } else if (activeTab === 'autoBookings') {
           const autoBookingsData = await api.getAdminAutoBookings(token);
           setAutoBookings(autoBookingsData);
@@ -37,6 +36,7 @@ const AdminLogsPage = () => {
         } else if (activeTab === 'status') {
           const statusData = await api.getAdminStatus(token);
           setStatus(statusData);
+          setSshTunnelCommand(statusData.ssh_tunnel_command);
         }
       } catch (err) {
         setError(err.message);
@@ -71,17 +71,12 @@ const AdminLogsPage = () => {
           <div>
             <p><strong>Status:</strong> {status.status}</p>
             <p><strong>Uptime:</strong> {status.uptime}</p>
-            <p><strong>Scraper Cache Size:</strong> {status.scraper_cache_size}</p>
+            {sshTunnelCommand && <p><strong>SSH TUNNEL:</strong> {sshTunnelCommand}</p>}
           </div>
         ) : <p>Loading...</p>;
       case 'logs':
         return (
           <div>
-            {sshTunnelUrl && (
-              <div className="alert alert-info">
-                <strong>SSH Tunnel:</strong> {sshTunnelUrl}
-              </div>
-            )}
             {logs ? logs.map((log, index) => (
               <div key={index} className="border-bottom mb-2 pb-2">
                 <div className="d-flex justify-content-between">
