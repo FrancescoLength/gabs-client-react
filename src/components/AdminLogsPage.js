@@ -7,6 +7,7 @@ const AdminLogsPage = () => {
   const [logs, setLogs] = useState([]);
   const [sshTunnelCommand, setSshTunnelCommand] = useState(null);
   const [autoBookings, setAutoBookings] = useState([]);
+  const [liveBookings, setLiveBookings] = useState([]);
   const [pushSubscriptions, setPushSubscriptions] = useState([]);
   const [users, setUsers] = useState([]);
   const [sessions, setSessions] = useState([]);
@@ -24,9 +25,9 @@ const AdminLogsPage = () => {
         } else if (activeTab === 'autoBookings') {
           const autoBookingsData = await api.getAdminAutoBookings(token);
           setAutoBookings(autoBookingsData);
-        } else if (activeTab === 'pushSubscriptions') {
-          const pushSubscriptionsData = await api.getAdminPushSubscriptions(token);
-          setPushSubscriptions(pushSubscriptionsData);
+        } else if (activeTab === 'liveBookings') {
+          const liveBookingsData = await api.getAdminLiveBookings(token);
+          setLiveBookings(liveBookingsData);
         } else if (activeTab === 'users') {
           const usersData = await api.getAdminUsers(token);
           setUsers(usersData);
@@ -131,7 +132,7 @@ const AdminLogsPage = () => {
             </table>
           </div>
         );
-      case 'pushSubscriptions':
+      case 'liveBookings':
         return (
           <div className="table-responsive">
             <table className="table table-striped">
@@ -139,17 +140,27 @@ const AdminLogsPage = () => {
                 <tr>
                   <th>ID</th>
                   <th>Username</th>
-                  <th>Endpoint</th>
+                  <th>Class Name</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Instructor</th>
+                  <th>Reminder Sent</th>
                   <th>Created At</th>
+                  <th>Auto-Booking ID</th>
                 </tr>
               </thead>
               <tbody>
-                {pushSubscriptions.map(s => (
-                  <tr key={s.id}>
-                    <td>{s.id}</td>
-                    <td>{s.username}</td>
-                    <td>{s.endpoint}</td>
-                    <td>{new Date(s.created_at * 1000).toLocaleString()}</td>
+                {liveBookings.map(b => (
+                  <tr key={b.id}>
+                    <td>{b.id}</td>
+                    <td>{b.username}</td>
+                    <td>{b.class_name}</td>
+                    <td>{b.class_date}</td>
+                    <td>{b.class_time}</td>
+                    <td>{b.instructor}</td>
+                    <td>{b.reminder_sent}</td>
+                    <td>{b.created_at}</td>
+                    <td>{b.auto_booking_id}</td>
                   </tr>
                 ))}
               </tbody>
@@ -169,6 +180,31 @@ const AdminLogsPage = () => {
                 {users.map((user, index) => (
                   <tr key={index}>
                     <td>{user}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+      case 'pushSubscriptions':
+        return (
+          <div className="table-responsive">
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Endpoint</th>
+                  <th>Created At</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pushSubscriptions.map(s => (
+                  <tr key={s.id}>
+                    <td>{s.id}</td>
+                    <td>{s.username}</td>
+                    <td>{s.endpoint}</td>
+                    <td>{new Date(s.created_at * 1000).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -217,6 +253,9 @@ const AdminLogsPage = () => {
         </li>
         <li className="nav-item">
           <button className={`nav-link ${activeTab === 'autoBookings' ? 'active' : ''}`} onClick={() => setActiveTab('autoBookings')}>Auto Bookings</button>
+        </li>
+        <li className="nav-item">
+          <button className={`nav-link ${activeTab === 'liveBookings' ? 'active' : ''}`} onClick={() => setActiveTab('liveBookings')}>Live Bookings</button>
         </li>
         <li className="nav-item">
           <button className={`nav-link ${activeTab === 'pushSubscriptions' ? 'active' : ''}`} onClick={() => setActiveTab('pushSubscriptions')}>Push Subscriptions</button>

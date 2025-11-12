@@ -195,6 +195,10 @@ export const getAdminAutoBookings = (token) => {
   return fetchWithAuth('/admin/auto_bookings', token);
 };
 
+export const getAdminLiveBookings = (token) => {
+  return fetchWithAuth('/admin/live_bookings', token);
+};
+
 export const getAdminPushSubscriptions = (token) => {
   return fetchWithAuth('/admin/push_subscriptions', token);
 };
