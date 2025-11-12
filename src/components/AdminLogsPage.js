@@ -25,6 +25,9 @@ const AdminLogsPage = () => {
         } else if (activeTab === 'autoBookings') {
           const autoBookingsData = await api.getAdminAutoBookings(token);
           setAutoBookings(autoBookingsData);
+        } else if (activeTab === 'pushSubscriptions') {
+          const pushSubscriptionsData = await api.getAdminPushSubscriptions(token);
+          setPushSubscriptions(pushSubscriptionsData);
         } else if (activeTab === 'liveBookings') {
           const liveBookingsData = await api.getAdminLiveBookings(token);
           setLiveBookings(liveBookingsData);
