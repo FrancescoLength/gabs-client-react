@@ -86,6 +86,7 @@ function MyAutoBookings({ onActionSuccess, staticClasses, refreshTrigger }) {
             setErrorMessage(null);
             const response = await api.cancelAutoBooking(token, bookingId);
             alert(response.message);
+            window.location.reload();
             onActionSuccess();
         } catch (err) {
             setErrorMessage(err.message);
