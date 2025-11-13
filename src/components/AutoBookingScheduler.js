@@ -20,6 +20,7 @@ function AutoBookingScheduler({onActionSuccess, staticClasses }) { // Accept sta
             setMessage(null);
             const response = await api.scheduleAutoBook(token, className, dayOfWeek, startTime, instructor);
             alert(JSON.stringify(response.message));
+            window.location.reload();
             onActionSuccess();
         } catch (err) {
             setMessage({ error: err.message }); // Store error message as an object
