@@ -9,7 +9,6 @@ const AdminLogsPage = () => {
   const [autoBookings, setAutoBookings] = useState([]);
   const [liveBookings, setLiveBookings] = useState([]);
   const [pushSubscriptions, setPushSubscriptions] = useState([]);
-  const [users, setUsers] = useState([]);
   const [sessions, setSessions] = useState([]);
   const [status, setStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -31,9 +30,6 @@ const AdminLogsPage = () => {
         } else if (activeTab === 'liveBookings') {
           const liveBookingsData = await api.getAdminLiveBookings(token);
           setLiveBookings(liveBookingsData);
-        } else if (activeTab === 'users') {
-          const usersData = await api.getAdminUsers(token);
-          setUsers(usersData);
         } else if (activeTab === 'sessions') {
           const sessionsData = await api.getAdminSessions(token);
           setSessions(sessionsData);
@@ -168,25 +164,6 @@ const AdminLogsPage = () => {
             </table>
           </div>
         );
-      case 'users':
-        return (
-          <div className="table-responsive">
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Username</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user, index) => (
-                  <tr key={index}>
-                    <td>{user}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        );
       case 'pushSubscriptions':
         return (
           <div className="table-responsive">
@@ -219,18 +196,18 @@ const AdminLogsPage = () => {
               <thead>
                 <tr>
                   <th>Username</th>
+                  <th>Updated At</th>
                   <th>Encrypted Password</th>
                   <th>Session Data</th>
-                  <th>Updated At</th>
                 </tr>
               </thead>
               <tbody>
                 {sessions.map((session, index) => (
                   <tr key={index}>
                     <td>{session.username}</td>
+                    <td>{new Date(session.updated_at * 1000).toLocaleString()}</td>
                     <td>{session.encrypted_password}</td>
                     <td>{JSON.stringify(session.session_data)}</td>
-                    <td>{new Date(session.updated_at * 1000).toLocaleString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -260,9 +237,6 @@ const AdminLogsPage = () => {
         </li>
         <li className="nav-item">
           <button className={`nav-link ${activeTab === 'pushSubscriptions' ? 'active' : ''}`} onClick={() => setActiveTab('pushSubscriptions')}>Push Subscriptions</button>
-        </li>
-        <li className="nav-item">
-          <button className={`nav-link ${activeTab === 'users' ? 'active' : ''}`} onClick={() => setActiveTab('users')}>Users</button>
         </li>
         <li className="nav-item">
           <button className={`nav-link ${activeTab === 'sessions' ? 'active' : ''}`} onClick={() => setActiveTab('sessions')}>Sessions</button>
