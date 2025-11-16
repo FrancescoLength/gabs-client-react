@@ -111,7 +111,6 @@ const AdminLogsPage = () => {
                   <th>Created At</th>
                   <th>Last Attempt</th>
                   <th>Retries</th>
-                  <th>Notif. Sent</th>
                 </tr>
               </thead>
               <tbody>
@@ -128,7 +127,6 @@ const AdminLogsPage = () => {
                     <td>{new Date(b.created_at * 1000).toLocaleString()}</td>
                     <td>{b.last_attempt_at ? new Date(b.last_attempt_at * 1000).toLocaleString() : 'N/A'}</td>
                     <td>{b.retry_count}</td>
-                    <td>{b.notification_sent}</td>
                   </tr>
                 ))}
               </tbody>
