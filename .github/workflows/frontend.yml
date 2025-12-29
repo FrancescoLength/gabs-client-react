@@ -1,0 +1,41 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'gabs-client-react/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'gabs-client-react/**'
+
+defaults:
+  run:
+    working-directory: gabs-client-react
+
+jobs:
+  test-frontend:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: gabs-client-react/package-lock.json
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: npm test -- --passWithNoTests --watchAll=false
+      env:
+        CI: true
