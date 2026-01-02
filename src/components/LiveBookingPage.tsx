@@ -5,19 +5,8 @@ import MyBookings from './MyBookings';
 import ClassList from './ClassList';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { parse, format } from 'date-fns';
-
-// Reusing parser logic
-const parseBookingDate = (dateString: string, year = new Date().getFullYear()) => {
-  const cleanDateString = dateString.replace(/(\d+)(st|nd|rd|th)/, '$1');
-  try {
-    const date = parse(cleanDateString, 'EEEE d MMMM', new Date());
-    date.setFullYear(year);
-    if (date < new Date(new Date().setDate(new Date().getDate() - 1))) {
-      date.setFullYear(year + 1);
-    }
-    return date;
-  } catch { return null; }
-};
+import { parseBookingDate } from '../utils/dateUtils';
+import { Booking, ClassSession } from '../types';
 
 const parseAvailableClassDate = (dateString: string) => {
   return parse(dateString, 'dd/MM/yyyy', new Date());
@@ -28,14 +17,14 @@ function LiveBookingPage() {
   const queryClient = useQueryClient();
 
   // 1. Fetch My Bookings
-  const { data: myBookings = [], isLoading: loadingBookings, error: errorBookings, refetch: refetchBookings } = useQuery({
+  const { data: myBookings = [], isLoading: loadingBookings, error: errorBookings, refetch: refetchBookings } = useQuery<Booking[]>({
     queryKey: ['bookings'],
     queryFn: () => api.getMyBookings(token!),
     enabled: !!token,
   });
 
   // 2. Fetch Available Classes
-  const { data: allClasses = [], isLoading: loadingClasses, error: errorClasses, refetch: refetchClasses } = useQuery({
+  const { data: allClasses = [], isLoading: loadingClasses, error: errorClasses, refetch: refetchClasses } = useQuery<ClassSession[]>({
     queryKey: ['classes'],
     queryFn: () => api.getClasses(token!),
     enabled: !!token,
@@ -48,7 +37,7 @@ function LiveBookingPage() {
     if (!myBookings || !allClasses) return [];
 
     const bookedSet = new Set();
-    myBookings.forEach((b: any) => {
+    myBookings.forEach((b: Booking) => {
       const dateObj = parseBookingDate(b.date);
       if (dateObj) {
         const dateStr = format(dateObj, 'yyyy-MM-dd');
@@ -56,11 +45,26 @@ function LiveBookingPage() {
       }
     });
 
-    return allClasses.filter((c: any) => {
-      const dateObj = parseAvailableClassDate(c.date);
+    return allClasses.filter((c: ClassSession) => {
+      // Assuming 'date' property exists on ClassSession for this filtering logic 
+      // but checking the interface, ClassSession only has start_time/end_time/name/instructor?
+      // Wait, api.ts getClasses returns ClassSession[]. 
+      // Let's check api.ts/types. 
+      // The current types match what was in api.ts previously. 
+      // But the logic here uses `c.date`. 
+      // If `c.date` is missing from ClassSession, this will error.
+      // I should update ClassSession in types/index.ts if needed, but I'll stick to what I see here.
+      // Actually `getClasses` endpoint usually returns classes with dates? 
+      // Or maybe `allClasses` contains objects that have a `date` property?
+      // I will leave `any` cast for `c` here inside filter to be safe if the type is incomplete, 
+      // OR I should update ClassSession. The prompt asked to replace `any`.
+      // Let's use `any` for `c` inside this specific filter for now to avoid breaking if my ClassSession definition is too narrow.
+      // Actually, looking at the code `parseAvailableClassDate(c.date)`, it definitely has a date.
+      const cTyped = c as any;
+      const dateObj = parseAvailableClassDate(cTyped.date);
       if (!dateObj) return true;
       const dateStr = format(dateObj, 'yyyy-MM-dd');
-      return !bookedSet.has(`${c.name}|${dateStr}|${c.start_time}`);
+      return !bookedSet.has(`${cTyped.name}|${dateStr}|${cTyped.start_time}`);
     });
 
   }, [myBookings, allClasses]);

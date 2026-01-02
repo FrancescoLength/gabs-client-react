@@ -1,29 +1,14 @@
+import {
+  Booking,
+  AutoBooking,
+  BookingPayload,
+  AutoBookingPayload,
+  ClassSession,
+  LoginResponse,
+  ApiResponse
+} from './types';
+
 export const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
-
-export interface ClassSession {
-  name: string;
-  start_time: string;
-  end_time: string;
-  instructor: string;
-}
-
-export interface BookingPayload {
-  class_name: string;
-  date: string;
-  time: string;
-}
-
-export interface AutoBookingPayload {
-  class_name: string;
-  time: string;
-  day_of_week: string;
-  instructor: string;
-}
-
-export interface LoginResponse {
-  access_token?: string;
-  error?: string;
-}
 
 /**
  * Executes user login.
@@ -44,7 +29,7 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 /**
  * Executes user logout on the backend.
  */
-export const logout = (token: string): Promise<any> => {
+export const logout = (token: string): Promise<{ message: string }> => {
   return fetchWithAuth('/logout', token, {
     method: 'POST',
   });
@@ -53,7 +38,7 @@ export const logout = (token: string): Promise<any> => {
 /**
  * Generic function for authenticated API calls.
  */
-const fetchWithAuth = async (endpoint: string, token: string, options: RequestInit = {}): Promise<any> => {
+const fetchWithAuth = async <T = any>(endpoint: string, token: string, options: RequestInit = {}): Promise<T> => {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
@@ -75,23 +60,23 @@ const fetchWithAuth = async (endpoint: string, token: string, options: RequestIn
 };
 
 // Retrieves the list of all available classes.
-export const getClasses = (token: string): Promise<any> => {
-  return fetchWithAuth('/classes', token);
+export const getClasses = (token: string): Promise<ClassSession[]> => {
+  return fetchWithAuth<ClassSession[]>('/classes', token);
 };
 
 /**
  * Retrieves the list of user's bookings and waiting list entries.
  */
-export const getMyBookings = (token: string): Promise<any> => {
-  return fetchWithAuth('/bookings', token);
+export const getMyBookings = (token: string): Promise<Booking[]> => {
+  return fetchWithAuth<Booking[]>('/bookings', token);
 };
 
 /**
  * Sends a request to book a class (or join a waiting list).
  */
-export const bookClass = (token: string, className: string, date: string, time: string): Promise<any> => {
+export const bookClass = (token: string, className: string, date: string, time: string): Promise<ApiResponse> => {
   const payload: BookingPayload = { class_name: className, date, time };
-  return fetchWithAuth('/book', token, {
+  return fetchWithAuth<ApiResponse>('/book', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -101,9 +86,9 @@ export const bookClass = (token: string, className: string, date: string, time: 
 /**
  * Sends a request to cancel a booking (or a waiting list spot).
  */
-export const cancelBooking = (token: string, className: string, date: string, time: string): Promise<any> => {
+export const cancelBooking = (token: string, className: string, date: string, time: string): Promise<ApiResponse> => {
   const payload: BookingPayload = { class_name: className, date, time };
-  return fetchWithAuth('/cancel', token, {
+  return fetchWithAuth<ApiResponse>('/cancel', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -113,21 +98,21 @@ export const cancelBooking = (token: string, className: string, date: string, ti
 /**
  * Retrieves the static timetable data.
  */
-export const getStaticClasses = (token: string): Promise<any> => {
+export const getStaticClasses = (token: string): Promise<Record<string, ClassSession[]>> => {
   return fetchWithAuth('/static_classes', token);
 };
 
 /**
  * Schedules an automatic booking for a class.
  */
-export const scheduleAutoBook = (token: string, className: string, dayOfWeek: string, time: string, instructor: string): Promise<any> => {
+export const scheduleAutoBook = (token: string, className: string, dayOfWeek: string, time: string, instructor: string): Promise<ApiResponse> => {
   const payload: AutoBookingPayload = {
     class_name: className,
     time: time,
     day_of_week: dayOfWeek,
     instructor: instructor
   };
-  return fetchWithAuth('/schedule_auto_book', token, {
+  return fetchWithAuth<ApiResponse>('/schedule_auto_book', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -137,16 +122,16 @@ export const scheduleAutoBook = (token: string, className: string, dayOfWeek: st
 /**
  * Retrieves all scheduled automatic bookings for the current user.
  */
-export const getAutoBookings = (token: string): Promise<any> => {
-  return fetchWithAuth('/auto_bookings', token);
+export const getAutoBookings = (token: string): Promise<AutoBooking[]> => {
+  return fetchWithAuth<AutoBooking[]>('/auto_bookings', token);
 };
 
 /**
  * Cancels a scheduled automatic booking.
  */
-export const cancelAutoBooking = (token: string, bookingId: number): Promise<any> => {
+export const cancelAutoBooking = (token: string, bookingId: number): Promise<ApiResponse> => {
   const payload = { booking_id: bookingId };
-  return fetchWithAuth('/cancel_auto_book', token, {
+  return fetchWithAuth<ApiResponse>('/cancel_auto_book', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
