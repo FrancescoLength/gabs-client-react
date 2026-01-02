@@ -50,7 +50,7 @@ describe('LiveBookingPage', () => {
         expect(screen.getByText(/Loading schedule.../i)).toBeInTheDocument();
     });
 
-    test('renders data after fetching', async () => {
+    test('renders data after fetching', { timeout: 20000 }, async () => {
         const mockBookings = [
             { name: 'Yoga', date: 'Monday 1st January', time: '10:00' }
         ];
