@@ -40,3 +40,17 @@ jobs:
         NODE_ENV: test
         VITEST_MAX_THREADS: 1
         VITEST_MIN_THREADS: 1
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test-frontend
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
