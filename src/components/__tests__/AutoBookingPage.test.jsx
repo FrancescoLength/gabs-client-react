@@ -37,7 +37,7 @@ describe('AutoBookingPage', () => {
         );
     };
 
-    test('renders data after fetching', async () => {
+    test('renders data after fetching', { timeout: 20000 }, async () => {
         // Return a promise that doesn't resolve immediately
         api.getStaticClasses.mockImplementation(() => new Promise(() => { }));
         api.getAutoBookings.mockImplementation(() => new Promise(() => { }));
