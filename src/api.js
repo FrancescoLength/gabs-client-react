@@ -1,4 +1,4 @@
-export const API_URL = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api` : '/api';
+export const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
 
 /**
  * Executes user login.
@@ -50,8 +50,8 @@ const fetchWithAuth = async (endpoint, token, options = {}) => {
     const errorData = await response.json();
     // If the token has expired, the API might return a specific error
     if (response.status === 401) {
-        // We could handle automatic logout here
-        console.error('Authentication error:', errorData.error);
+      // We could handle automatic logout here
+      console.error('Authentication error:', errorData.error);
     }
     throw new Error(errorData.error || `API call to ${endpoint} failed`);
   }
@@ -94,12 +94,12 @@ export const bookClass = (token, className, date, time) => {
  * @param {string} date The class date in YYYY-MM-DD format.
  */
 export const cancelBooking = (token, className, date, time) => {
-    const payload = { class_name: className, date, time };
-    return fetchWithAuth('/cancel', token, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-    });
+  const payload = { class_name: className, date, time };
+  return fetchWithAuth('/cancel', token, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
 };
 
 /**
@@ -121,8 +121,8 @@ export const getStaticClasses = (token) => {
  * @param {string} date Optional: The target date for a single booking in YYYY-MM-DD format.
  */
 export const scheduleAutoBook = (token, className, dayOfWeek, time, instructor) => {
-  const payload = { 
-    class_name: className, 
+  const payload = {
+    class_name: className,
     time: time,
     day_of_week: dayOfWeek,
     instructor: instructor

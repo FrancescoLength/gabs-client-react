@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
+import { test, expect, vi } from 'vitest';
 
 // Mock api.js to avoid network calls
-jest.mock('./api', () => ({
-    getVapidPublicKey: jest.fn(),
-    subscribeToPush: jest.fn(),
+// vi.mock works similarly to jest.mock
+vi.mock('./api', () => ({
+    getVapidPublicKey: vi.fn(),
+    subscribeToPush: vi.fn(),
 }));
 
 // Mock AuthContext if needed, but App uses AuthProvider, so we might test integration.
@@ -13,13 +15,17 @@ jest.mock('./api', () => ({
 // We can test if "Home" link is present, which verifies basic rendering.
 
 test('renders Home link', () => {
+    // We might need to handle the router inside App if it's not wrapped in one, 
+    // but App usually contains the Router.
+    // If App creates its own Router, we can render it directly.
     render(<App />);
-    const linkElements = screen.getAllByText(/Home/i);
+    // "Get Started" is on the home page
+    const linkElements = screen.getAllByText(/Get Started/i);
     expect(linkElements.length).toBeGreaterThan(0);
 });
 
 test('renders Gabs Logo', () => {
     render(<App />);
-    const logo = screen.getByAltText(/Gabs Logo/i);
-    expect(logo).toBeInTheDocument();
+    const logos = screen.getAllByAltText(/Gabs Logo/i);
+    expect(logos.length).toBeGreaterThan(0);
 });

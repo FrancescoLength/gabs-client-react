@@ -4,11 +4,11 @@ import ProtectedRoute from '../ProtectedRoute';
 import { useAuth } from '../../context/AuthContext';
 
 // Mock dependencies
-jest.mock('../../context/AuthContext');
+vi.mock('../../context/AuthContext');
 
 describe('ProtectedRoute', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
     });
 
     test('redirects to login if not logged in', () => {

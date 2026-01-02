@@ -4,15 +4,14 @@ import { AuthProvider } from '../../context/AuthContext';
 import { BrowserRouter } from 'react-router-dom';
 
 // Mock AuthContext values
-const mockLogin = jest.fn();
+const mockLogin = vi.fn();
 const mockContext = {
     login: mockLogin,
     isLoggedIn: false,
 };
 
 // We need to mock the useAuth hook because it's used inside Login
-jest.mock('../../context/AuthContext', () => ({
-    ...jest.requireActual('../../context/AuthContext'),
+vi.mock('../../context/AuthContext', () => ({
     useAuth: () => mockContext,
 }));
 
@@ -28,7 +27,7 @@ test('renders login form', () => {
     renderLogin();
     expect(screen.getByLabelText(/Email Address/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Login/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Sign In/i })).toBeInTheDocument();
 });
 
 test('handles input changes', () => {
@@ -47,7 +46,7 @@ test('submits form with credentials', async () => {
     renderLogin();
     const emailInput = screen.getByLabelText(/Email Address/i);
     const passwordInput = screen.getByLabelText(/Password/i);
-    const submitButton = screen.getByRole('button', { name: /Login/i });
+    const submitButton = screen.getByRole('button', { name: /Sign In/i });
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });

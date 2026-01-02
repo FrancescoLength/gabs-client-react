@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
 import * as api from '../api';
+import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext(null);
 
@@ -25,9 +26,9 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        const payload = jwtDecode(token);
         setUser(payload.sub);
-        const admin = payload.sub === process.env.REACT_APP_ADMIN_EMAIL;
+        const admin = payload.sub === import.meta.env.VITE_ADMIN_EMAIL;
         setIsAdmin(admin);
       } catch (e) {
         console.error("Failed to decode token", e);

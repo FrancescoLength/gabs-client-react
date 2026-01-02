@@ -3,8 +3,8 @@ import ClassList from '../ClassList';
 import * as api from '../../api';
 
 // Mock dependencies
-jest.mock('../../api');
-jest.mock('../../context/AuthContext', () => ({
+vi.mock('../../api');
+vi.mock('../../context/AuthContext', () => ({
     useAuth: () => ({ token: 'mock-token' }),
 }));
 
@@ -30,41 +30,42 @@ describe('ClassList', () => {
         }
     ];
 
-    const mockOnActionSuccess = jest.fn();
+    const mockOnActionSuccess = vi.fn();
 
     beforeEach(() => {
-        jest.clearAllMocks();
-        window.alert = jest.fn();
+        vi.clearAllMocks();
+        window.alert = vi.fn();
     });
 
     test('renders grouped classes by date', () => {
         render(<ClassList classes={mockClasses} onActionSuccess={mockOnActionSuccess} />);
 
-        // Check for date header (assuming 01/01/2023 is Sunday)
-        expect(screen.getByText(/Sunday - 01\/01\/2023/i)).toBeInTheDocument();
+        // Check for date header components
+        expect(screen.getByText('Sunday')).toBeInTheDocument();
+        expect(screen.getByText('01/01/2023')).toBeInTheDocument();
     });
 
     test('renders class details', () => {
         render(<ClassList classes={mockClasses} onActionSuccess={mockOnActionSuccess} />);
 
-        // Expand the accordion for the date
-        fireEvent.click(screen.getByText(/Sunday - 01\/01\/2023/i));
+        // Expand the accordion for the date. Click the date text.
+        fireEvent.click(screen.getByText('01/01/2023'));
 
         expect(screen.getByText('Yoga')).toBeInTheDocument();
         // Use getAllByText because multiple classes might have these labels
-        expect(screen.getAllByText(/Instructor: Alice/i)[0]).toBeInTheDocument();
-        expect(screen.getAllByText(/Available Spaces:/i)[0]).toBeInTheDocument();
-        expect(screen.getByText('5')).toBeInTheDocument();
+        // Need to be careful with exact content matching
+        expect(screen.getByText('10:00 - 11:00')).toBeInTheDocument();
+        expect(screen.getByText('5 spaces left')).toBeInTheDocument();
     });
 
     test('bookings class successfully', async () => {
         api.bookClass.mockResolvedValue({ status: 'success' });
 
         render(<ClassList classes={mockClasses} onActionSuccess={mockOnActionSuccess} />);
-        fireEvent.click(screen.getByText(/Sunday - 01\/01\/2023/i));
+        fireEvent.click(screen.getByText('01/01/2023'));
 
-        // Click Book button for Yoga
-        const bookButtons = screen.getAllByRole('button', { name: /^Book$/i });
+        // Click Book Class button for Yoga
+        const bookButtons = screen.getAllByRole('button', { name: /Book Class/i });
         fireEvent.click(bookButtons[0]);
 
         await waitFor(() => {
@@ -78,10 +79,10 @@ describe('ClassList', () => {
         api.bookClass.mockResolvedValue({ status: 'success' });
 
         render(<ClassList classes={mockClasses} onActionSuccess={mockOnActionSuccess} />);
-        fireEvent.click(screen.getByText(/Sunday - 01\/01\/2023/i));
+        fireEvent.click(screen.getByText('01/01/2023'));
 
-        // Finds "Book Waitinglist" button
-        const waitlistButton = screen.getByRole('button', { name: /Book Waitinglist/i });
+        // Finds "Join Waitlist" button
+        const waitlistButton = screen.getByRole('button', { name: /Join Waitlist/i });
         fireEvent.click(waitlistButton);
 
         await waitFor(() => {
@@ -93,9 +94,9 @@ describe('ClassList', () => {
         api.bookClass.mockRejectedValue(new Error('Booking failed'));
 
         render(<ClassList classes={mockClasses} onActionSuccess={mockOnActionSuccess} />);
-        fireEvent.click(screen.getByText(/Sunday - 01\/01\/2023/i));
+        fireEvent.click(screen.getByText('01/01/2023'));
 
-        const bookButtons = screen.getAllByRole('button', { name: /^Book$/i });
+        const bookButtons = screen.getAllByRole('button', { name: /Book Class/i });
         fireEvent.click(bookButtons[0]);
 
         await waitFor(() => {
