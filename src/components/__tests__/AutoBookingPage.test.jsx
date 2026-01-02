@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import AutoBookingPage from '../AutoBookingPage';
+import AutoBookingPage from "../../features/booking/AutoBookingPage";
 import * as api from '../../api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
@@ -10,10 +10,10 @@ vi.mock('../../context/AuthContext', () => ({
     useAuth: () => ({ token: 'mock-token' }),
 }));
 // Mock child components to isolate page logic testing
-vi.mock('../MyAutoBookings', () => ({
+vi.mock('../../features/booking/MyAutoBookings', () => ({
     default: () => <div data-testid="my-auto-bookings">MyAutoBookings</div>
 }));
-vi.mock('../AutoBookingScheduler', () => ({
+vi.mock('../../features/booking/AutoBookingScheduler', () => ({
     default: () => <div data-testid="auto-booking-scheduler">AutoBookingScheduler</div>
 }));
 

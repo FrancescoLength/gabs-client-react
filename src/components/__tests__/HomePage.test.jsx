@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import HomePage from '../HomePage';
+import HomePage from "../../features/home/HomePage";
 
 describe('HomePage', () => {
     it('renders public landing page when not logged in', () => {

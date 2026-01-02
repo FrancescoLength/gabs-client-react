@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import * as api from '../api';
+import { useAuth } from '../../context/AuthContext';
+import * as api from '../../api';
 import { format } from 'date-fns';
 import { Clock, Calendar, Trash2 } from 'lucide-react';
-import { parseBookingDate, getCancellationStatus } from '../utils/dateUtils';
-import { Booking } from '../types';
+import { parseBookingDate, getCancellationStatus } from '../../utils/dateUtils';
+import { Booking } from '../../types';
 
 interface MyBookingsProps {
     bookings: Booking[];
@@ -28,7 +28,7 @@ const MyBookings = ({ bookings, onActionSuccess }: MyBookingsProps) => {
         try {
             // API expects date in YYYY-MM-DD format
             if (token) {
-                const response = await api.cancelBooking(token, className, dateStr, time);
+                const response = await api.cancelBooking(className, dateStr, time);
                 // Show alert only on success/error to confirm action completed
                 alert(response.message || 'Cancelled successfully');
                 onActionSuccess();

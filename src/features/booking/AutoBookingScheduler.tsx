@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import * as api from '../api';
+import { useAuth } from '../../context/AuthContext';
+import * as api from '../../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, Plus, Clock, User } from 'lucide-react';
 
-import { ClassSession } from '../types';
+import { ClassSession } from '../../types';
 
 interface AutoBookingSchedulerProps {
     staticClasses: Record<string, ClassSession[]>;
@@ -36,7 +36,7 @@ function AutoBookingScheduler({ staticClasses, onActionSuccess }: AutoBookingSch
         try {
             console.log("Calling api.scheduleAutoBook...");
             if (token) {
-                const response = await api.scheduleAutoBook(token, cls.name, day, cls.start_time, cls.instructor);
+                const response = await api.scheduleAutoBook(cls.name, day, cls.start_time, cls.instructor);
                 console.log("API Success", response);
                 alert(response.message);
                 queryClient.invalidateQueries({ queryKey: ['autoBookings'] });

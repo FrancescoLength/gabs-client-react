@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { Lock, Mail } from 'lucide-react';
-import gabsLogo from '../gabs_logo.png';
+import gabsLogo from '../../gabs_logo.png';
 
 function Login() {
   const [email, setEmail] = useState('');

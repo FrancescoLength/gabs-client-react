@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       if (token) {
         // Perform a backend logout to clear the session from the server.
-        await api.logout(token);
+        await api.logout();
       }
     } catch (error) {
       // Log the error but proceed with client-side logout anyway,

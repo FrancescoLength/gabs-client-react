@@ -1,8 +1,8 @@
 
 import AutoBookingScheduler from './AutoBookingScheduler';
 import MyAutoBookings from './MyAutoBookings';
-import { useAuth } from '../context/AuthContext';
-import * as api from '../api';
+import { useAuth } from '../../context/AuthContext';
+import * as api from '../../api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 function AutoBookingPage() {
@@ -12,14 +12,14 @@ function AutoBookingPage() {
   // 1. Fetch My Auto Bookings
   const { data: autoBookings = [], isLoading: loadingBookings, error: errorBookings } = useQuery({
     queryKey: ['autoBookings'],
-    queryFn: () => api.getAutoBookings(token!),
+    queryFn: () => api.getAutoBookings(),
     enabled: !!token,
   });
 
   // 2. Fetch Static Classes (Schedule)
   const { data: staticClasses = {}, isLoading: loadingStatic, error: errorStatic } = useQuery({
     queryKey: ['staticClasses'],
-    queryFn: () => api.getStaticClasses(token!),
+    queryFn: () => api.getStaticClasses(),
     enabled: !!token,
   });
 

@@ -1,12 +1,12 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import * as api from '../api';
+import { useAuth } from '../../context/AuthContext';
+import * as api from '../../api';
 import MyBookings from './MyBookings';
 import ClassList from './ClassList';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { parse, format } from 'date-fns';
-import { parseBookingDate } from '../utils/dateUtils';
-import { Booking, ClassSession } from '../types';
+import { parseBookingDate } from '../../utils/dateUtils';
+import { Booking, ClassSession } from '../../types';
 
 const parseAvailableClassDate = (dateString: string) => {
   return parse(dateString, 'dd/MM/yyyy', new Date());
@@ -19,14 +19,14 @@ function LiveBookingPage() {
   // 1. Fetch My Bookings
   const { data: myBookings = [], isLoading: loadingBookings, error: errorBookings, refetch: refetchBookings } = useQuery<Booking[]>({
     queryKey: ['bookings'],
-    queryFn: () => api.getMyBookings(token!),
+    queryFn: () => api.getMyBookings(),
     enabled: !!token,
   });
 
-  // 2. Fetch Available Classes
-  const { data: allClasses = [], isLoading: loadingClasses, error: errorClasses, refetch: refetchClasses } = useQuery<ClassSession[]>({
+  // 2. Fetch Classes
+  const { data: allClasses = [], isLoading: loadingClasses, error: errorClasses, refetch: refetchClasses } = useQuery({
     queryKey: ['classes'],
-    queryFn: () => api.getClasses(token!),
+    queryFn: () => api.getClasses(),
     enabled: !!token,
   });
 

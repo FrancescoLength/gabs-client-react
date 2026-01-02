@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import MyBookings from '../MyBookings';
+import MyBookings from "../../features/booking/MyBookings";
 import * as api from '../../api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, test, expect, beforeEach, afterEach } from 'vitest';
@@ -94,7 +94,7 @@ describe('MyBookings', () => {
         fireEvent.click(cancelButtons[0]);
 
         await waitFor(() => {
-            expect(api.cancelBooking).toHaveBeenCalledWith('mock-token', 'Yoga', expect.any(String), '10:00');
+            expect(api.cancelBooking).toHaveBeenCalledWith('Yoga', expect.any(String), '10:00');
             expect(mockOnActionSuccess).toHaveBeenCalled();
         });
     });

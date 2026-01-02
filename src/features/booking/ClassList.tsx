@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import * as api from '../api';
+import { useAuth } from '../../context/AuthContext';
+import * as api from '../../api';
 import { format, parse } from 'date-fns';
 import { ChevronDown, ChevronUp, Calendar, Clock, User, CheckCircle, AlertCircle } from 'lucide-react';
-import { ClassSession } from '../types';
+import { ClassSession } from '../../types';
 
 // Helper to parse "dd/mm/yyyy" to Date object
 const parseDateString = (dateString: string) => parse(dateString, 'dd/MM/yyyy', new Date());
@@ -57,7 +57,7 @@ function ClassList({ classes, onActionSuccess }: ClassListProps) {
 
         try {
             if (!token) return;
-            const result = await api.bookClass(token, item.name, dateForApi, item.start_time);
+            const result = await api.bookClass(item.name, dateForApi, item.start_time);
             if (result.status === 'success') {
                 alert('Booking successful!');
             } else if (result.status === 'info') {

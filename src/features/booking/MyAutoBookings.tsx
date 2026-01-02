@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import * as api from '../api';
+import { useAuth } from '../../context/AuthContext';
+import * as api from '../../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { Clock, Repeat, Trash2 } from 'lucide-react';
-import { AutoBooking, ClassSession } from '../types';
+import { AutoBooking, ClassSession } from '../../types';
 
 interface MyAutoBookingsProps {
     autoBookings: AutoBooking[];
@@ -58,7 +58,7 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }: MyAuto
         try {
             setLoadingId(bookingId);
             if (token) {
-                const response = await api.cancelAutoBooking(token, bookingId);
+                const response = await api.cancelAutoBooking(bookingId);
                 console.log("Delete Auto-Booking Response:", response);
                 alert(response.message);
                 queryClient.invalidateQueries({ queryKey: ['autoBookings'] });
