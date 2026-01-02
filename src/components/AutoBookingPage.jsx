@@ -30,15 +30,6 @@ function AutoBookingPage() {
     queryClient.invalidateQueries(['autoBookings']);
   };
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center p-20 text-brand-muted space-y-4">
-        <div className="w-12 h-12 border-4 border-brand-red-light border-t-brand-red rounded-full animate-spin"></div>
-        <p className="font-medium">Loading automation data...</p>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="p-6 bg-white border border-red-100 rounded-2xl shadow-sm text-center">
@@ -48,7 +39,12 @@ function AutoBookingPage() {
     );
   }
 
-  return (
+  return loading ? (
+    <div className="flex flex-col items-center justify-center p-20 text-brand-muted space-y-4">
+      <div className="w-12 h-12 border-4 border-brand-red-light border-t-brand-red rounded-full animate-spin"></div>
+      <p className="font-medium">Loading automation data...</p>
+    </div>
+  ) : (
     <div className="mb-20">
       <div className="mb-8">
         <h1 className="text-3xl lg:text-4xl font-extrabold text-brand-dark mb-2 tracking-tight">Auto Booking</h1>
