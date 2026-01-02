@@ -27,7 +27,7 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }: MyAuto
         const targetDayIndex = daysOfWeek.indexOf(dayOfWeek);
         if (targetDayIndex === -1) return null;
 
-        const daysUntilTarget = (targetDayOfWeek - currentDayOfWeek + 7) % 7;
+        const daysUntilTarget = (targetDayIndex - today.getDay() + 7) % 7;
 
         const nextDate = new Date(today);
         nextDate.setDate(today.getDate() + daysUntilTarget);
