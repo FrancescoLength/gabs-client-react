@@ -3,11 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { Clock, Repeat, Trash2 } from 'lucide-react';
-import { AutoBooking } from '../types';
+import { AutoBooking, ClassSession } from '../types';
 
 interface MyAutoBookingsProps {
     autoBookings: AutoBooking[];
-    staticClasses: any;
+    staticClasses: Record<string, ClassSession[]>;
     onActionSuccess: () => void;
 }
 
@@ -64,9 +64,9 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }: MyAuto
                 queryClient.invalidateQueries({ queryKey: ['autoBookings'] });
                 onActionSuccess();
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Delete Auto-Booking Error:", err);
-            alert(err.message);
+            alert(err instanceof Error ? err.message : 'Unknown error');
         } finally {
             setLoadingId(null);
         }
@@ -89,7 +89,7 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }: MyAuto
                 let displayEndTime = '';
                 if (staticClasses && booking.day_of_week && staticClasses[booking.day_of_week]) {
                     const foundClass = staticClasses[booking.day_of_week].find(
-                        (c: any) => c.name === booking.class_name && c.start_time === booking.target_time && c.instructor === booking.instructor
+                        (c: ClassSession) => c.name === booking.class_name && c.start_time === booking.target_time && c.instructor === booking.instructor
                     );
                     if (foundClass) displayEndTime = foundClass.end_time;
                 }

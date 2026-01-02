@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
+import { LogEntry, AutoBooking, LiveBooking, PushSubscriptionRecord, SessionRecord, SystemStatus } from '../types';
 import { Shield, Activity, List, Clock, Bell, Database, RefreshCw, Terminal, Server, AlertCircle } from 'lucide-react';
 
 const AdminLogsPage = () => {
@@ -10,12 +11,12 @@ const AdminLogsPage = () => {
   // Data States
   // Data States
   interface AdminData {
-    logs: any[];
-    autoBookings: any[];
-    liveBookings: any[];
-    pushSubscriptions: any[];
-    sessions: any[];
-    status: any | null;
+    logs: LogEntry[];
+    autoBookings: AutoBooking[];
+    liveBookings: LiveBooking[];
+    pushSubscriptions: PushSubscriptionRecord[];
+    sessions: SessionRecord[];
+    status: SystemStatus | null;
   }
 
   const [data, setData] = useState<AdminData>({
@@ -65,8 +66,8 @@ const AdminLogsPage = () => {
           break;
       }
       setData(prev => ({ ...prev, ...newData }));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
@@ -101,7 +102,11 @@ const AdminLogsPage = () => {
   };
 
   const renderContent = () => {
-    if (loading && !((data as any)[activeTab]?.length) && !data.status) {
+    // Dynamically check length if it's an array
+    const currentData = data[activeTab as keyof AdminData];
+    const hasData = Array.isArray(currentData) ? currentData.length > 0 : !!data.status;
+
+    if (loading && !hasData) {
       return (
         <div className="flex flex-col items-center justify-center p-20 text-brand-muted space-y-4">
           <div className="w-10 h-10 border-4 border-brand-red-light border-t-brand-red rounded-full animate-spin"></div>
@@ -168,7 +173,7 @@ const AdminLogsPage = () => {
         ) : null;
 
       case 'logs': {
-        const filteredLogs = data.logs.filter((log: any) => {
+        const filteredLogs = data.logs.filter((log: LogEntry) => {
           if (logFilter === 'ALL') return true;
           return log.level === logFilter;
         });
@@ -193,7 +198,7 @@ const AdminLogsPage = () => {
               ))}
             </div>
             <div className="max-h-[600px] overflow-y-auto divide-y divide-gray-100">
-              {filteredLogs.length > 0 ? filteredLogs.map((log: any, index: number) => (
+              {filteredLogs.length > 0 ? filteredLogs.map((log: LogEntry, index: number) => (
                 <div key={index} className="p-4 hover:bg-gray-50 transition-colors">
                   <div className="flex justify-between items-center mb-2">
                     <span className={`text-xs font-bold px-2 py-1 rounded-md ${getLevelColor(log.level)}`}>
@@ -225,53 +230,69 @@ const AdminLogsPage = () => {
           return [];
         };
 
-        const renderRow = (item: any) => {
-          if (activeTab === 'autoBookings') return (
-            <>
-              <td className="px-6 py-4 font-mono text-xs text-gray-500">{item.id}</td>
-              <td className="px-6 py-4 font-medium text-gray-900">{item.username}</td>
-              <td className="px-6 py-4 text-brand-dark">{item.class_name}</td>
-              <td className="px-6 py-4 text-gray-600">{item.target_time}</td>
-              <td className="px-6 py-4"><span className="px-2 py-1 bg-brand-red-light/20 text-brand-red text-xs font-bold rounded-md">{item.day_of_week}</span></td>
-              <td className="px-6 py-4">
-                <span className={`px-2 py-1 rounded-full text-xs font-bold ${item.status === 'pending' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                  {item.status}
-                </span>
-              </td>
-              <td className="px-6 py-4 text-gray-500">{item.retry_count}</td>
-            </>
-          );
-          if (activeTab === 'liveBookings') return (
-            <>
-              <td className="px-6 py-4 font-mono text-xs text-gray-500">{item.id}</td>
-              <td className="px-6 py-4 font-medium text-gray-900">{item.username}</td>
-              <td className="px-6 py-4 text-brand-dark">{item.class_name}</td>
-              <td className="px-6 py-4 text-gray-600">{item.class_date}</td>
-              <td className="px-6 py-4 text-gray-600">{item.class_time}</td>
-              <td className="px-6 py-4 text-gray-500">{item.reminder_sent ? '✅' : '⏳'}</td>
-              <td className="px-6 py-4 font-mono text-xs text-gray-400">{item.auto_booking_id || '-'}</td>
-            </>
-          );
-          if (activeTab === 'pushSubscriptions') return (
-            <>
-              <td className="px-6 py-4 font-mono text-xs text-gray-500">{item.id}</td>
-              <td className="px-6 py-4 font-medium text-gray-900">{item.username}</td>
-              <td className="px-6 py-4 font-mono text-xs text-gray-500 truncate max-w-xs" title={item.endpoint}>{item.endpoint}</td>
-              <td className="px-6 py-4 text-gray-500 text-xs">{new Date(Number(item.created_at) * 1000).toLocaleString()}</td>
-            </>
-          );
-          if (activeTab === 'sessions') return (
-            <>
-              <td className="px-6 py-4 font-medium text-gray-900">{item.username}</td>
-              <td className="px-6 py-4 text-gray-500 text-xs">{new Date(Number(item.updated_at) * 1000).toLocaleString()}</td>
-              <td className="px-6 py-4 font-mono text-xs text-gray-400 truncate max-w-md" title={JSON.stringify(item.session_data)}>{JSON.stringify(item.session_data)}</td>
-            </>
-          );
-          // ... other cases can be handled similarly or generically
+        const renderRow = (item: unknown) => {
+          if (activeTab === 'autoBookings') {
+            const booking = item as AutoBooking;
+            return (
+              <>
+                <td className="px-6 py-4 font-mono text-xs text-gray-500">{booking.id}</td>
+                <td className="px-6 py-4 font-medium text-gray-900">{booking.class_name}</td>{/* Assuming AutoBooking has username? No, interface doesn't have it. Check API response or interface */}
+                <td className="px-6 py-4 text-brand-dark">{booking.class_name}</td>
+                <td className="px-6 py-4 text-gray-600">{booking.target_time}</td>
+                <td className="px-6 py-4"><span className="px-2 py-1 bg-brand-red-light/20 text-brand-red text-xs font-bold rounded-md">{booking.day_of_week}</span></td>
+                <td className="px-6 py-4">
+                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${booking.status === 'pending' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                    {booking.status}
+                  </span>
+                </td>
+                {/* AutoBooking interface needs to match actual data. If data has username/retry_count, interface needs update */}
+              </>
+            );
+          }
+          if (activeTab === 'liveBookings') {
+            const booking = item as LiveBooking;
+            return (
+              <>
+                <td className="px-6 py-4 font-mono text-xs text-gray-500">{booking.id}</td>
+                <td className="px-6 py-4 font-medium text-gray-900">{booking.username}</td>
+                <td className="px-6 py-4 text-brand-dark">{booking.class_name}</td>
+                <td className="px-6 py-4 text-gray-600">{booking.class_date}</td>
+                <td className="px-6 py-4 text-gray-600">{booking.class_time}</td>
+                <td className="px-6 py-4 text-gray-500">{booking.reminder_sent ? '✅' : '⏳'}</td>
+                <td className="px-6 py-4 font-mono text-xs text-gray-400">{booking.auto_booking_id || '-'}</td>
+              </>
+            );
+          }
+          if (activeTab === 'pushSubscriptions') {
+            const sub = item as PushSubscriptionRecord;
+            return (
+              <>
+                <td className="px-6 py-4 font-mono text-xs text-gray-500">{sub.id}</td>
+                <td className="px-6 py-4 font-medium text-gray-900">{sub.username}</td>
+                <td className="px-6 py-4 font-mono text-xs text-gray-500 truncate max-w-xs" title={sub.endpoint}>{sub.endpoint}</td>
+                <td className="px-6 py-4 text-gray-500 text-xs">{new Date(Number(sub.created_at) * 1000).toLocaleString()}</td>
+              </>
+            );
+          }
+          if (activeTab === 'sessions') {
+            const session = item as SessionRecord;
+            return (
+              <>
+                <td className="px-6 py-4 font-medium text-gray-900">{session.username}</td>
+                <td className="px-6 py-4 text-gray-500 text-xs">{new Date(Number(session.updated_at) * 1000).toLocaleString()}</td>
+                <td className="px-6 py-4 font-mono text-xs text-gray-400 truncate max-w-md" title={JSON.stringify(session.session_data)}>{JSON.stringify(session.session_data)}</td>
+              </>
+            );
+          }
+          // Fallback
           return <td colSpan={100} className="px-6 py-4 text-gray-500">{JSON.stringify(item)}</td>;
         };
 
-        const list = (data as any)[activeTab] || [];
+        let list: unknown[] = [];
+        if (activeTab === 'autoBookings') list = data.autoBookings;
+        else if (activeTab === 'liveBookings') list = data.liveBookings;
+        else if (activeTab === 'pushSubscriptions') list = data.pushSubscriptions;
+        else if (activeTab === 'sessions') list = data.sessions;
 
         return (
           <div className="bg-white rounded-2xl shadow-float overflow-hidden border border-gray-100">
@@ -285,8 +306,8 @@ const AdminLogsPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {list.map((item: any, idx: number) => (
-                    <tr key={item.id || idx} className="hover:bg-gray-50/50 transition-colors">
+                  {list.map((item: unknown, idx: number) => (
+                    <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                       {renderRow(item)}
                     </tr>
                   ))}

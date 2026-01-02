@@ -19,9 +19,8 @@ function Login() {
 
     try {
       await login(email, password);
-    } catch (err: any) {
-      console.error("Login API error:", err.message);
-      setError("Incorrect email or password.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setLoading(false);
     }

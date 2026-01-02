@@ -1,8 +1,11 @@
 export interface ClassSession {
     name: string;
+    date: string; // "dd/MM/yyyy"
     start_time: string;
     end_time: string;
     instructor: string;
+    available_spaces: number;
+    duration?: number;
 }
 
 export interface BookingPayload {
@@ -54,4 +57,39 @@ export interface LoginResponse {
 export interface ApiResponse {
     message: string;
     status?: string; // 'success', 'info', 'error'
+}
+
+export interface LogEntry {
+    level: string;
+    message: string;
+    timestamp: string;
+}
+
+export interface SystemStatus {
+    status: string;
+    uptime: string;
+    ssh_tunnel_command?: string;
+}
+
+export interface LiveBooking {
+    id: number;
+    username: string;
+    class_name: string;
+    class_date: string;
+    class_time: string;
+    reminder_sent: boolean;
+    auto_booking_id?: number;
+}
+
+export interface PushSubscriptionRecord {
+    id: number;
+    username: string;
+    endpoint: string;
+    created_at: number;
+}
+
+export interface SessionRecord {
+    username: string;
+    updated_at: number;
+    session_data: unknown;
 }

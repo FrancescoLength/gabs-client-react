@@ -1,20 +1,21 @@
 import { createContext, useState, useContext, useEffect, useMemo, useCallback, ReactNode } from 'react';
 import * as api from '../api';
 import { jwtDecode } from 'jwt-decode';
+import { LoginResponse } from '../types';
 
 interface AuthContextType {
   token: string | null;
   user: string | null;
   isAdmin: boolean;
   isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<LoginResponse>;
   logout: () => void;
 }
 
 interface DecodedToken {
   sub: string;
   exp: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -47,8 +48,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user: payload.sub,
         isAdmin: payload.sub === import.meta.env.VITE_ADMIN_EMAIL
       };
-    } catch (e) {
-      console.error("Failed to decode token", e);
+    } catch (err: unknown) {
+      console.error("Failed to decode token:", err);
       // We cannot call logout() here during render.
       // If token is invalid, we'll return null and handle cleanup via effect if needed,
       // or better, just let the next restricted action fail and trigger logout.
@@ -68,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (token) {
       try {
-        jwtDecode(token);
+        jwtDecode<{ username: string; isAdmin: boolean; exp: number }>(token);
       } catch {
         // Only if it really fails decoding do we logout
         setTimeout(() => logout(), 0);

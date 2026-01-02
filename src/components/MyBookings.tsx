@@ -33,8 +33,9 @@ const MyBookings = ({ bookings, onActionSuccess }: MyBookingsProps) => {
                 alert(response.message || 'Cancelled successfully');
                 onActionSuccess();
             }
-        } catch (err: any) {
-            alert(err.message);
+        } catch (err: unknown) {
+            console.error("Cancel Error:", err);
+            alert(err instanceof Error ? err.message : 'Unknown error');
         } finally {
             setLoadingId(null);
         }

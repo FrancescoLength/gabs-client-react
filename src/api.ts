@@ -5,7 +5,13 @@ import {
   AutoBookingPayload,
   ClassSession,
   LoginResponse,
-  ApiResponse
+  ApiResponse,
+  LogEntry,
+  SystemStatus,
+  LiveBooking,
+  PushSubscriptionRecord,
+  SessionRecord,
+  User
 } from './types';
 
 export const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
@@ -38,7 +44,7 @@ export const logout = (token: string): Promise<{ message: string }> => {
 /**
  * Generic function for authenticated API calls.
  */
-const fetchWithAuth = async <T = any>(endpoint: string, token: string, options: RequestInit = {}): Promise<T> => {
+const fetchWithAuth = async <T>(endpoint: string, token: string, options: RequestInit = {}): Promise<T> => {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
@@ -156,8 +162,8 @@ export const getVapidPublicKey = async (): Promise<string> => {
 /**
  * Sends the push subscription to the backend.
  */
-export const subscribeToPush = (token: string, subscription: PushSubscription): Promise<any> => {
-  return fetchWithAuth('/subscribe-push', token, {
+export const subscribeToPush = (token: string, subscription: PushSubscription): Promise<ApiResponse> => {
+  return fetchWithAuth<ApiResponse>('/subscribe-push', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(subscription),
@@ -166,30 +172,30 @@ export const subscribeToPush = (token: string, subscription: PushSubscription): 
 
 // --- Admin Functions ---
 
-export const getAdminLogs = (token: string): Promise<any> => {
-  return fetchWithAuth('/admin/logs', token);
+export const getAdminLogs = (token: string): Promise<{ logs: LogEntry[] }> => {
+  return fetchWithAuth<{ logs: LogEntry[] }>('/admin/logs', token);
 };
 
-export const getAdminAutoBookings = (token: string): Promise<any> => {
-  return fetchWithAuth('/admin/auto_bookings', token);
+export const getAdminAutoBookings = (token: string): Promise<AutoBooking[]> => {
+  return fetchWithAuth<AutoBooking[]>('/admin/auto_bookings', token);
 };
 
-export const getAdminLiveBookings = (token: string): Promise<any> => {
-  return fetchWithAuth('/admin/live_bookings', token);
+export const getAdminLiveBookings = (token: string): Promise<LiveBooking[]> => {
+  return fetchWithAuth<LiveBooking[]>('/admin/live_bookings', token);
 };
 
-export const getAdminPushSubscriptions = (token: string): Promise<any> => {
-  return fetchWithAuth('/admin/push_subscriptions', token);
+export const getAdminPushSubscriptions = (token: string): Promise<PushSubscriptionRecord[]> => {
+  return fetchWithAuth<PushSubscriptionRecord[]>('/admin/push_subscriptions', token);
 };
 
-export const getAdminUsers = (token: string): Promise<any> => {
-  return fetchWithAuth('/admin/users', token);
+export const getAdminUsers = (token: string): Promise<User[]> => {
+  return fetchWithAuth<User[]>('/admin/users', token); // Assuming User type matches
 };
 
-export const getAdminSessions = (token: string): Promise<any> => {
-  return fetchWithAuth('/admin/sessions', token);
+export const getAdminSessions = (token: string): Promise<SessionRecord[]> => {
+  return fetchWithAuth<SessionRecord[]>('/admin/sessions', token);
 };
 
-export const getAdminStatus = (token: string): Promise<any> => {
-  return fetchWithAuth('/admin/status', token);
+export const getAdminStatus = (token: string): Promise<SystemStatus> => {
+  return fetchWithAuth<SystemStatus>('/admin/status', token);
 };

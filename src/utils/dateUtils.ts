@@ -70,7 +70,7 @@ export const getCancellationStatus = (
             const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
             return { canCancel: true, statusText: `Cancel within: ${h}h ${m}m` };
         }
-    } catch (e) {
+    } catch {
         return { canCancel: false, statusText: "Error calculating time" };
     }
 };
