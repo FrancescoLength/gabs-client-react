@@ -5,10 +5,10 @@ import { format, parse } from 'date-fns';
 import { ChevronDown, ChevronUp, Calendar, Clock, User, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Helper to parse "dd/mm/yyyy" to Date object
-const parseDateString = (dateString) => parse(dateString, 'dd/MM/yyyy', new Date());
+const parseDateString = (dateString: string) => parse(dateString, 'dd/MM/yyyy', new Date());
 
 // Format date for API: "yyyy-mm-dd"
-const formatDateForApi = (dateString) => {
+const formatDateForApi = (dateString: string) => {
     try {
         const date = parseDateString(dateString);
         return format(date, 'yyyy-MM-dd');
@@ -18,7 +18,7 @@ const formatDateForApi = (dateString) => {
     }
 };
 
-const getDayOfWeek = (dateString) => {
+const getDayOfWeek = (dateString: string) => {
     try {
         const date = parseDateString(dateString);
         return format(date, 'EEEE');
@@ -27,19 +27,24 @@ const getDayOfWeek = (dateString) => {
     }
 };
 
-function ClassList({ classes, onActionSuccess }) {
-    const { token } = useAuth();
-    const [loadingId, setLoadingId] = useState(null);
-    const [error, setError] = useState(null);
-    const [openSections, setOpenSections] = useState([]);
+interface ClassListProps {
+    classes: any[];
+    onActionSuccess: () => void;
+}
 
-    const toggleSection = (date) => {
+function ClassList({ classes, onActionSuccess }: ClassListProps) {
+    const { token } = useAuth();
+    const [loadingId, setLoadingId] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [openSections, setOpenSections] = useState<string[]>([]);
+
+    const toggleSection = (date: string) => {
         setOpenSections(prev =>
             prev.includes(date) ? prev.filter(d => d !== date) : [...prev, date]
         );
     };
 
-    const handleBook = async (item) => {
+    const handleBook = async (item: any) => {
         const dateForApi = formatDateForApi(item.date);
         if (!dateForApi) {
             setError("Invalid date format for booking.");
@@ -50,6 +55,7 @@ function ClassList({ classes, onActionSuccess }) {
         setError(null);
 
         try {
+            if (!token) return;
             const result = await api.bookClass(token, item.name, dateForApi, item.start_time);
             if (result.status === 'success') {
                 alert('Booking successful!');
@@ -59,7 +65,7 @@ function ClassList({ classes, onActionSuccess }) {
                 setError(result.message);
             }
             onActionSuccess();
-        } catch (err) {
+        } catch (err: any) {
             setError(err.message);
         } finally {
             setLoadingId(null);
@@ -78,7 +84,7 @@ function ClassList({ classes, onActionSuccess }) {
         );
     }
 
-    const groupedClasses = classes.reduce((acc, item) => {
+    const groupedClasses = classes.reduce((acc: any, item: any) => {
         const date = item.date;
         if (!acc[date]) {
             acc[date] = [];
@@ -121,7 +127,7 @@ function ClassList({ classes, onActionSuccess }) {
 
                         {isExpanded && (
                             <div className="divide-y divide-gray-50">
-                                {groupedClasses[date].map((item, index) => {
+                                {groupedClasses[date].map((item: any, index: number) => {
                                     const isLoading = loadingId === (item.name + item.date);
                                     const isAvailable = item.available_spaces > 0;
 

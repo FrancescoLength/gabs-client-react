@@ -6,7 +6,7 @@ import { Clock, Calendar, Trash2 } from 'lucide-react';
 
 
 // Similar parser logic
-const parseBookingDate = (dateString, year = new Date().getFullYear()) => {
+const parseBookingDate = (dateString: string, year = new Date().getFullYear()) => {
     const cleanDateString = dateString.replace(/(\d+)(st|nd|rd|th)/, '$1');
     try {
         const date = parse(cleanDateString, 'EEEE d MMMM', new Date());
@@ -18,10 +18,15 @@ const parseBookingDate = (dateString, year = new Date().getFullYear()) => {
     } catch { return null; }
 };
 
-const MyBookings = ({ bookings, onActionSuccess }) => {
+interface MyBookingsProps {
+    bookings: any[];
+    onActionSuccess: () => void;
+}
+
+const MyBookings = ({ bookings, onActionSuccess }: MyBookingsProps) => {
     const { token } = useAuth();
 
-    const [loadingId, setLoadingId] = useState(null);
+    const [loadingId, setLoadingId] = useState<string | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
@@ -29,18 +34,19 @@ const MyBookings = ({ bookings, onActionSuccess }) => {
         return () => clearInterval(timer);
     }, []);
 
-    const handleCancel = async (uniqueId, className, dateStr, time) => {
+    const handleCancel = async (uniqueId: string, className: string, dateStr: string, time: string) => {
         // window.confirm removed to fix UI blocking issue
 
         setLoadingId(uniqueId);
         try {
             // API expects date in YYYY-MM-DD format
-            const response = await api.cancelBooking(token, className, dateStr, time);
-
-            // Show alert only on success/error to confirm action completed
-            alert(response.message || 'Cancelled successfully');
-            onActionSuccess();
-        } catch (err) {
+            if (token) {
+                const response = await api.cancelBooking(token, className, dateStr, time);
+                // Show alert only on success/error to confirm action completed
+                alert(response.message || 'Cancelled successfully');
+                onActionSuccess();
+            }
+        } catch (err: any) {
             alert(err.message);
         } finally {
             setLoadingId(null);
@@ -57,7 +63,7 @@ const MyBookings = ({ bookings, onActionSuccess }) => {
 
     return (
         <div className="space-y-4">
-            {bookings.map((booking, index) => {
+            {bookings.map((booking: any, index: number) => {
                 const bookingDate = parseBookingDate(booking.date);
                 // Create a unique ID for React key and loading state, as booking.id might be missing
                 const uniqueId = booking.id || `${booking.name}-${booking.date}-${booking.time}-${index}`;
@@ -77,7 +83,7 @@ const MyBookings = ({ bookings, onActionSuccess }) => {
                     classTime.setHours(hours, minutes, 0, 0);
 
                     const cancelDeadline = new Date(classTime.getTime() - 2 * 60 * 60 * 1000); // 2 hours before
-                    const diff = cancelDeadline - currentTime;
+                    const diff = cancelDeadline.getTime() - currentTime.getTime();
 
                     if (currentTime > classTime) {
                         canCancel = false;

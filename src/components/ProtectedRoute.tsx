@@ -2,7 +2,14 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const ProtectedRoute = ({ children, adminOnly }) => {
+import { ReactNode } from 'react';
+
+interface ProtectedRouteProps {
+  children: ReactNode;
+  adminOnly?: boolean;
+}
+
+const ProtectedRoute = ({ children, adminOnly }: ProtectedRouteProps) => {
   const { isLoggedIn, isAdmin } = useAuth();
 
   if (!isLoggedIn) {

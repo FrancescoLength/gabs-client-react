@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import { getVapidPublicKey, subscribeToPush } from '../api';
 
-const urlBase64ToUint8Array = (base64String) => {
+const urlBase64ToUint8Array = (base64String: string) => {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
         .replace(/-/g, '+')
@@ -16,7 +16,7 @@ const urlBase64ToUint8Array = (base64String) => {
     return outputArray;
 };
 
-export const usePushNotifications = (token, isLoggedIn) => {
+export const usePushNotifications = (token: string | null, isLoggedIn: boolean) => {
     const subscribeToPushNotifications = useCallback(async () => {
         if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
             console.warn('Push notifications not supported.');
@@ -37,7 +37,9 @@ export const usePushNotifications = (token, isLoggedIn) => {
                 });
             }
 
-            await subscribeToPush(token, subscription);
+            if (token) {
+                await subscribeToPush(token, subscription);
+            }
 
             console.log('Push subscription successful:', subscription);
         } catch (error) {

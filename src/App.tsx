@@ -30,7 +30,7 @@ function Layout() {
 
   usePushNotifications(token, isLoggedIn);
 
-  const isActive = (path) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <div className="min-h-screen bg-brand-gray flex flex-col font-sans text-brand-dark antialiased selection:bg-brand-red-light selection:text-brand-red">
@@ -141,7 +141,14 @@ function Layout() {
 }
 
 // Sub-components
-const NavLink = ({ to, icon, label, active }) => (
+interface NavLinkProps {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  active: boolean;
+}
+
+const NavLink = ({ to, icon, label, active }: NavLinkProps) => (
   <Link
     to={to}
     className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 text-sm font-medium ${active
@@ -154,7 +161,7 @@ const NavLink = ({ to, icon, label, active }) => (
   </Link>
 );
 
-const MobileNavItem = ({ to, icon, label, active }) => (
+const MobileNavItem = ({ to, icon, label, active }: NavLinkProps) => (
   <Link to={to} className={`flex flex-col items-center justify-center w-full h-full ${active ? 'text-brand-red' : 'text-gray-400 hover:text-gray-600'} group relative`}>
     <div className={`p-1.5 rounded-xl transition-all duration-300 ${active ? 'bg-brand-red-light/50 shadow-inner' : 'group-hover:bg-gray-50'}`}>
       {icon}

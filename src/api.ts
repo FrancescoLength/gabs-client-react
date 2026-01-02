@@ -1,12 +1,34 @@
 export const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
 
+export interface ClassSession {
+  name: string;
+  start_time: string;
+  end_time: string;
+  instructor: string;
+}
+
+export interface BookingPayload {
+  class_name: string;
+  date: string;
+  time: string;
+}
+
+export interface AutoBookingPayload {
+  class_name: string;
+  time: string;
+  day_of_week: string;
+  instructor: string;
+}
+
+export interface LoginResponse {
+  access_token?: string;
+  error?: string;
+}
+
 /**
  * Executes user login.
- * @param {string} email 
- * @param {string} password 
- * @returns {Promise<object>} Data returned by the API, including the access_token.
  */
-export const login = async (email, password) => {
+export const login = async (email: string, password: string): Promise<LoginResponse> => {
   const response = await fetch(`${API_URL}/login`, {
     method: 'POST',
     headers: {
@@ -21,9 +43,8 @@ export const login = async (email, password) => {
 
 /**
  * Executes user logout on the backend.
- * @param {string} token The user's JWT token.
  */
-export const logout = (token) => {
+export const logout = (token: string): Promise<any> => {
   return fetchWithAuth('/logout', token, {
     method: 'POST',
   });
@@ -31,12 +52,8 @@ export const logout = (token) => {
 
 /**
  * Generic function for authenticated API calls.
- * @param {string} endpoint The endpoint to call (e.g., '/classes').
- * @param {string} token The user's JWT token.
- * @param {object} options Additional options for fetch().
- * @returns {Promise<any>}
  */
-const fetchWithAuth = async (endpoint, token, options = {}) => {
+const fetchWithAuth = async (endpoint: string, token: string, options: RequestInit = {}): Promise<any> => {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
@@ -48,9 +65,7 @@ const fetchWithAuth = async (endpoint, token, options = {}) => {
 
   if (!response.ok) {
     const errorData = await response.json();
-    // If the token has expired, the API might return a specific error
     if (response.status === 401) {
-      // We could handle automatic logout here
       console.error('Authentication error:', errorData.error);
     }
     throw new Error(errorData.error || `API call to ${endpoint} failed`);
@@ -60,26 +75,22 @@ const fetchWithAuth = async (endpoint, token, options = {}) => {
 };
 
 // Retrieves the list of all available classes.
-export const getClasses = (token) => {
+export const getClasses = (token: string): Promise<any> => {
   return fetchWithAuth('/classes', token);
 };
 
 /**
  * Retrieves the list of user's bookings and waiting list entries.
- * @param {string} token The user's JWT token.
  */
-export const getMyBookings = (token) => {
+export const getMyBookings = (token: string): Promise<any> => {
   return fetchWithAuth('/bookings', token);
 };
 
 /**
  * Sends a request to book a class (or join a waiting list).
- * @param {string} token The user's JWT token.
- * @param {string} className The class name.
- * @param {string} date The class date in YYYY-MM-DD format.
  */
-export const bookClass = (token, className, date, time) => {
-  const payload = { class_name: className, date, time };
+export const bookClass = (token: string, className: string, date: string, time: string): Promise<any> => {
+  const payload: BookingPayload = { class_name: className, date, time };
   return fetchWithAuth('/book', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -89,12 +100,9 @@ export const bookClass = (token, className, date, time) => {
 
 /**
  * Sends a request to cancel a booking (or a waiting list spot).
- * @param {string} token The user's JWT token.
- * @param {string} className The class name.
- * @param {string} date The class date in YYYY-MM-DD format.
  */
-export const cancelBooking = (token, className, date, time) => {
-  const payload = { class_name: className, date, time };
+export const cancelBooking = (token: string, className: string, date: string, time: string): Promise<any> => {
+  const payload: BookingPayload = { class_name: className, date, time };
   return fetchWithAuth('/cancel', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -104,24 +112,16 @@ export const cancelBooking = (token, className, date, time) => {
 
 /**
  * Retrieves the static timetable data.
- * @param {string} token The user's JWT token.
  */
-export const getStaticClasses = (token) => {
+export const getStaticClasses = (token: string): Promise<any> => {
   return fetchWithAuth('/static_classes', token);
 };
 
 /**
  * Schedules an automatic booking for a class.
- * @param {string} token The user's JWT token.
- * @param {string} className The class name.
- * @param {string} dayOfWeek The day of the week for recurring bookings (e.g., 'Monday').
- * @param {string} time The target time for the class in HH:MM format.
- * @param {string} instructor The instructor's name.
- * @param {boolean} isRecurring Whether the booking is recurring.
- * @param {string} date Optional: The target date for a single booking in YYYY-MM-DD format.
  */
-export const scheduleAutoBook = (token, className, dayOfWeek, time, instructor) => {
-  const payload = {
+export const scheduleAutoBook = (token: string, className: string, dayOfWeek: string, time: string, instructor: string): Promise<any> => {
+  const payload: AutoBookingPayload = {
     class_name: className,
     time: time,
     day_of_week: dayOfWeek,
@@ -136,18 +136,15 @@ export const scheduleAutoBook = (token, className, dayOfWeek, time, instructor) 
 
 /**
  * Retrieves all scheduled automatic bookings for the current user.
- * @param {string} token The user's JWT token.
  */
-export const getAutoBookings = (token) => {
+export const getAutoBookings = (token: string): Promise<any> => {
   return fetchWithAuth('/auto_bookings', token);
 };
 
 /**
  * Cancels a scheduled automatic booking.
- * @param {string} token The user's JWT token.
- * @param {number} bookingId The ID of the auto-booking to cancel.
  */
-export const cancelAutoBooking = (token, bookingId) => {
+export const cancelAutoBooking = (token: string, bookingId: number): Promise<any> => {
   const payload = { booking_id: bookingId };
   return fetchWithAuth('/cancel_auto_book', token, {
     method: 'POST',
@@ -158,9 +155,8 @@ export const cancelAutoBooking = (token, bookingId) => {
 
 /**
  * Retrieves the VAPID public key from the server.
- * @returns {Promise<string>} The VAPID public key as text.
  */
-export const getVapidPublicKey = async () => {
+export const getVapidPublicKey = async (): Promise<string> => {
   const response = await fetch(`${API_URL}/vapid-public-key`, {
     headers: {
       'ngrok-skip-browser-warning': 'true',
@@ -174,10 +170,8 @@ export const getVapidPublicKey = async () => {
 
 /**
  * Sends the push subscription to the backend.
- * @param {string} token The user's JWT token.
- * @param {object} subscription The PushSubscription object.
  */
-export const subscribeToPush = (token, subscription) => {
+export const subscribeToPush = (token: string, subscription: PushSubscription): Promise<any> => {
   return fetchWithAuth('/subscribe-push', token, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -187,30 +181,30 @@ export const subscribeToPush = (token, subscription) => {
 
 // --- Admin Functions ---
 
-export const getAdminLogs = (token) => {
+export const getAdminLogs = (token: string): Promise<any> => {
   return fetchWithAuth('/admin/logs', token);
 };
 
-export const getAdminAutoBookings = (token) => {
+export const getAdminAutoBookings = (token: string): Promise<any> => {
   return fetchWithAuth('/admin/auto_bookings', token);
 };
 
-export const getAdminLiveBookings = (token) => {
+export const getAdminLiveBookings = (token: string): Promise<any> => {
   return fetchWithAuth('/admin/live_bookings', token);
 };
 
-export const getAdminPushSubscriptions = (token) => {
+export const getAdminPushSubscriptions = (token: string): Promise<any> => {
   return fetchWithAuth('/admin/push_subscriptions', token);
 };
 
-export const getAdminUsers = (token) => {
+export const getAdminUsers = (token: string): Promise<any> => {
   return fetchWithAuth('/admin/users', token);
 };
 
-export const getAdminSessions = (token) => {
+export const getAdminSessions = (token: string): Promise<any> => {
   return fetchWithAuth('/admin/sessions', token);
 };
 
-export const getAdminStatus = (token) => {
+export const getAdminStatus = (token: string): Promise<any> => {
   return fetchWithAuth('/admin/status', token);
 };
