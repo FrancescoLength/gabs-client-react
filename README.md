@@ -1,5 +1,6 @@
 # GABS Client React Application
-<img width="562" height="422" alt="immagine" src="https://github.com/user-attachments/assets/60822773-815c-4015-9476-1c126a4fd74f" />
+<img width="1236" height="524" alt="image" src="https://github.com/user-attachments/assets/d701a678-3fb2-4e8c-9a28-fc95fad03382" />
+
 
 This is the frontend React application for the Gym Automatic Booking System (GABS). It provides a user interface to interact with the GABS API, allowing users to manage their gym class bookings, schedule auto-bookings, and receive push notifications.
 
