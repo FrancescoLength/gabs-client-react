@@ -22,7 +22,7 @@
     "build": "vite build",
     "serve": "vite preview",
     "test": "vitest",
-    "test:ci": "vitest run --no-coverage --reporter=verbose"
+    "test:ci": "vitest run --no-isolate --no-coverage --reporter=verbose"
   },
   "eslintConfig": {
     "extends": [
