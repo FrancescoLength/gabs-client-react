@@ -1,10 +1,15 @@
 /* General Styling */
 :root {
-  --primary-brand-color: rgb(230, 30, 33); /* Professional Blue */
-  --secondary-accent-color: rgb(230, 30, 33); /* Vibrant Red */
-  --main-bg-color: #ffffff; /* White background */
-  --main-text-color: #212529; /* Dark grey for main text */
-  --navbar-bg-color: #ffffff; /* White navbar */
+  --primary-brand-color: rgb(230, 30, 33);
+  /* Professional Blue */
+  --secondary-accent-color: rgb(230, 30, 33);
+  /* Vibrant Red */
+  --main-bg-color: #ffffff;
+  /* White background */
+  --main-text-color: #212529;
+  /* Dark grey for main text */
+  --navbar-bg-color: #ffffff;
+  /* White navbar */
   --button-border-radius: 4px;
   --card-border-radius: 8px;
 }
@@ -15,7 +20,7 @@ body {
   color: var(--main-text-color);
 }
 
-/* Override Bootstrap primary colors */
+/* Global Styles */
 .btn-primary,
 .btn-primary:hover,
 .btn-primary:active,
@@ -23,13 +28,15 @@ body {
   background-color: var(--primary-brand-color) !important;
   border-color: var(--primary-brand-color) !important;
   border-radius: var(--button-border-radius);
-  color: #ffffff; /* White text on blue button */
+  color: #ffffff;
+  /* White text on blue button */
 }
 
 .btn-danger {
   background-color: var(--secondary-accent-color) !important;
   border-color: var(--secondary-accent-color) !important;
-  color: #ffffff; /* White text on red button */
+  color: #ffffff;
+  /* White text on red button */
 }
 
 .btn-link {
@@ -39,50 +46,57 @@ body {
 /* Navbar Styling */
 .navbar {
   background-color: var(--navbar-bg-color) !important;
-  border-bottom: 1px solid #dee2e6; /* Light grey border */
+  border-bottom: 1px solid #dee2e6;
+  /* Light grey border */
 }
 
 .navbar-brand,
 .navbar-nav .nav-link {
-  color: var(--main-text-color) !important; /* Dark grey links on white navbar */
+  color: var(--main-text-color) !important;
+  /* Dark grey links on white navbar */
 }
 
 .navbar-nav .nav-link:hover {
-  color: var(--secondary-accent-color) !important; /* Red hover effect */
+  color: var(--secondary-accent-color) !important;
+  /* Red hover effect */
 }
 
 /* Card and Container Styling */
 .card,
 .list-group-item,
 .p-5.mb-4.bg-light.rounded-3 {
-  background-color: #ffffff; /* White cards */
+  background-color: #ffffff;
+  /* White cards */
   color: var(--main-text-color);
   border-radius: var(--card-border-radius);
-  border: 1px solid #dee2e6; /* Light grey border */
+  border: 1px solid #dee2e6;
+  /* Light grey border */
 }
 
 .list-group-item {
-    background-color: #ffffff;
+  background-color: #ffffff;
 }
 
 .list-group-item:hover {
-    background-color: #f8f9fa; /* Lighter grey on hover */
+  background-color: #f8f9fa;
+  /* Lighter grey on hover */
 }
 
 /* Adjust text color for dark backgrounds if needed (e.g. for alerts) */
 .alert-danger {
-    color: #ffffff; 
-    background-color: var(--secondary-accent-color); 
-    border-color: var(--secondary-accent-color); 
+  color: #ffffff;
+  background-color: var(--secondary-accent-color);
+  border-color: var(--secondary-accent-color);
 }
 
 /* Spinner color */
 .spinner-border {
-    color: var(--primary-brand-color);
+  color: var(--primary-brand-color);
 }
 
 /* Custom background color using the brand's primary color */
 .bg-brand-primary {
   background-color: var(--primary-brand-color);
-  color: #ffffff; /* Assuming white text is desired on the brand color */
+  color: #ffffff;
+  /* Assuming white text is desired on the brand color */
 }

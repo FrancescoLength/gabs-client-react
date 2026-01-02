@@ -3,9 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { Clock, Repeat, Trash2 } from 'lucide-react';
+import { AutoBooking } from '../types';
 
 interface MyAutoBookingsProps {
-    autoBookings: any[];
+    autoBookings: AutoBooking[];
     staticClasses: any;
     onActionSuccess: () => void;
 }
@@ -21,7 +22,7 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }: MyAuto
         return () => clearInterval(timer);
     }, []);
 
-    const getNextOccurrence = (dayOfWeek: string, startTime: string, lastBookedDate: string) => {
+    const getNextOccurrence = (dayOfWeek: string, startTime: string, lastBookedDate: string | undefined) => {
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const today = new Date();
         const targetDayIndex = daysOfWeek.indexOf(dayOfWeek);
@@ -81,7 +82,7 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }: MyAuto
 
     return (
         <div className="space-y-4">
-            {autoBookings.map((booking: any) => {
+            {autoBookings.map((booking: AutoBooking) => {
                 const updatedNextClassTime = getNextOccurrence(booking.day_of_week, booking.target_time, booking.last_booked_date);
                 const isLoading = loadingId === booking.id;
 

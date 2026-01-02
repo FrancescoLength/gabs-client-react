@@ -1,25 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { Clock, Calendar, Trash2 } from 'lucide-react';
-
-
-// Similar parser logic
-const parseBookingDate = (dateString: string, year = new Date().getFullYear()) => {
-    const cleanDateString = dateString.replace(/(\d+)(st|nd|rd|th)/, '$1');
-    try {
-        const date = parse(cleanDateString, 'EEEE d MMMM', new Date());
-        date.setFullYear(year);
-        if (date < new Date(new Date().setDate(new Date().getDate() - 1))) {
-            date.setFullYear(year + 1);
-        }
-        return date;
-    } catch { return null; }
-};
+import { parseBookingDate, getCancellationStatus } from '../utils/dateUtils';
+import { Booking } from '../types';
 
 interface MyBookingsProps {
-    bookings: any[];
+    bookings: Booking[];
     onActionSuccess: () => void;
 }
 
@@ -36,7 +24,6 @@ const MyBookings = ({ bookings, onActionSuccess }: MyBookingsProps) => {
 
     const handleCancel = async (uniqueId: string, className: string, dateStr: string, time: string) => {
         // window.confirm removed to fix UI blocking issue
-
         setLoadingId(uniqueId);
         try {
             // API expects date in YYYY-MM-DD format
@@ -63,7 +50,7 @@ const MyBookings = ({ bookings, onActionSuccess }: MyBookingsProps) => {
 
     return (
         <div className="space-y-4">
-            {bookings.map((booking: any, index: number) => {
+            {bookings.map((booking: Booking, index: number) => {
                 const bookingDate = parseBookingDate(booking.date);
                 // Create a unique ID for React key and loading state, as booking.id might be missing
                 const uniqueId = booking.id || `${booking.name}-${booking.date}-${booking.time}-${index}`;
@@ -73,30 +60,7 @@ const MyBookings = ({ bookings, onActionSuccess }: MyBookingsProps) => {
 
                 const isLoading = loadingId === uniqueId;
 
-                // Cancellation deadline logic
-                let canCancel = true;
-                let deadlineText = "";
-
-                if (bookingDate && booking.time) {
-                    const [hours, minutes] = booking.time.split(':').map(Number);
-                    const classTime = new Date(bookingDate);
-                    classTime.setHours(hours, minutes, 0, 0);
-
-                    const cancelDeadline = new Date(classTime.getTime() - 2 * 60 * 60 * 1000); // 2 hours before
-                    const diff = cancelDeadline.getTime() - currentTime.getTime();
-
-                    if (currentTime > classTime) {
-                        canCancel = false;
-                        deadlineText = "Class Finished";
-                    } else if (diff < 0) {
-                        canCancel = false;
-                        deadlineText = "Cancellation closed";
-                    } else {
-                        const h = Math.floor(diff / (1000 * 60 * 60));
-                        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                        deadlineText = `Cancel within: ${h}h ${m}m`;
-                    }
-                }
+                const { canCancel, statusText } = getCancellationStatus(bookingDate, booking.time, currentTime);
 
                 return (
                     <div key={uniqueId} className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-float transition-all duration-300 p-5 group relative overflow-hidden">
@@ -110,9 +74,9 @@ const MyBookings = ({ bookings, onActionSuccess }: MyBookingsProps) => {
                                     {booking.date}
                                 </div>
                             </div>
-                            {deadlineText && (
+                            {statusText && (
                                 <span className={`text-xs font-bold px-2 py-1 rounded-lg ${canCancel ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
-                                    {deadlineText}
+                                    {statusText}
                                 </span>
                             )}
                         </div>
