@@ -16,10 +16,5 @@ export default defineConfig({
         globals: true,
         environment: 'jsdom',
         setupFiles: './src/setupTests.js',
-        css: false,
-        testTimeout: 30000,
-        hookTimeout: 30000,
-        // CI Optimization: Disable parallelism for stability
-        fileParallelism: !process.env.CI,
     },
 });
