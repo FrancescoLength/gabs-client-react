@@ -30,6 +30,7 @@ export interface Booking {
 
 export interface AutoBooking {
     id: number;
+    username: string;
     class_name: string;
     day_of_week: string; // "Monday"
     target_time: string;
@@ -37,6 +38,7 @@ export interface AutoBooking {
     status: string; // "pending", etc.
     last_booked_date?: string;
 }
+
 
 export interface User {
     username: string;

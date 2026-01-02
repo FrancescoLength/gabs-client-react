@@ -236,7 +236,7 @@ const AdminLogsPage = () => {
             return (
               <>
                 <td className="px-6 py-4 font-mono text-xs text-gray-500">{booking.id}</td>
-                <td className="px-6 py-4 font-medium text-gray-900">{booking.class_name}</td>{/* Assuming AutoBooking has username? No, interface doesn't have it. Check API response or interface */}
+                <td className="px-6 py-4 font-medium text-gray-900">{booking.username}</td>
                 <td className="px-6 py-4 text-brand-dark">{booking.class_name}</td>
                 <td className="px-6 py-4 text-gray-600">{booking.target_time}</td>
                 <td className="px-6 py-4"><span className="px-2 py-1 bg-brand-red-light/20 text-brand-red text-xs font-bold rounded-md">{booking.day_of_week}</span></td>
