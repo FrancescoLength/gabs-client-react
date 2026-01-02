@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ClassList from '../ClassList';
+import ClassList from "../../features/booking/ClassList";
 import * as api from '../../api';
 
 // Mock dependencies
@@ -69,7 +69,7 @@ describe('ClassList', () => {
         fireEvent.click(bookButtons[0]);
 
         await waitFor(() => {
-            expect(api.bookClass).toHaveBeenCalledWith('mock-token', 'Yoga', '2023-01-01', '10:00');
+            expect(api.bookClass).toHaveBeenCalledWith('Yoga', '2023-01-01', '10:00');
             expect(window.alert).toHaveBeenCalledWith('Booking successful!');
             expect(mockOnActionSuccess).toHaveBeenCalled();
         });
@@ -86,7 +86,7 @@ describe('ClassList', () => {
         fireEvent.click(waitlistButton);
 
         await waitFor(() => {
-            expect(api.bookClass).toHaveBeenCalledWith('mock-token', 'Pilates', '2023-01-01', '12:00');
+            expect(api.bookClass).toHaveBeenCalledWith(mockClasses[1].name, '2023-01-01', '12:00');
         });
     });
 

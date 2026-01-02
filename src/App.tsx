@@ -2,12 +2,12 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Home, Calendar, Clock, Shield, LogOut, LogIn } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import Login from './components/Login';
-import LiveBookingPage from './components/LiveBookingPage';
-import AutoBookingPage from './components/AutoBookingPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import AdminLogsPage from './components/AdminLogsPage';
-import HomePage from './components/HomePage';
+import Login from './features/auth/Login';
+import LiveBookingPage from './features/booking/LiveBookingPage';
+import AutoBookingPage from './features/booking/AutoBookingPage';
+import ProtectedRoute from './features/auth/ProtectedRoute';
+import AdminLogsPage from './features/admin/AdminLogsPage';
+import HomePage from './features/home/HomePage';
 import gabsLogo from './gabs_logo.png';
 import { usePushNotifications } from './hooks/usePushNotifications';
 import './index.css';

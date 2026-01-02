@@ -38,7 +38,7 @@ export const usePushNotifications = (token: string | null, isLoggedIn: boolean) 
             }
 
             if (token) {
-                await subscribeToPush(token, subscription);
+                await subscribeToPush(subscription);
             }
 
             console.log('Push subscription successful:', subscription);

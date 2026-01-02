@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import LiveBookingPage from '../LiveBookingPage';
+import LiveBookingPage from "../../features/booking/LiveBookingPage";
 import * as api from '../../api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
@@ -13,10 +13,11 @@ vi.mock('../../context/AuthContext', () => {
 });
 
 // Vitest components mocking
-vi.mock('../MyBookings', () => ({
+// Vitest components mocking
+vi.mock('../../features/booking/MyBookings', () => ({
     default: () => 'MyBookings Mock'
 }));
-vi.mock('../ClassList', () => ({
+vi.mock('../../features/booking/ClassList', () => ({
     default: () => 'ClassList Mock'
 }));
 

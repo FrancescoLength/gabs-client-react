@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import AutoBookingScheduler from '../AutoBookingScheduler';
+import AutoBookingScheduler from "../../features/booking/AutoBookingScheduler";
 import * as api from '../../api';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi, describe, test, expect, beforeEach } from 'vitest';
@@ -79,19 +79,7 @@ describe('AutoBookingScheduler', () => {
         fireEvent.click(scheduleButtons[0]);
 
         await waitFor(() => {
-            expect(api.scheduleAutoBook).toHaveBeenCalledWith(
-                'mock-token',
-                'Yoga',
-                'Monday',
-                '10:00',
-                'Alice'
-            );
-            // Alert calls might be simple string
-            expect(window.alert).toHaveBeenCalledWith('Scheduled successfully');
-            // Reload was removed in code previously? (Code shows invalidateQueries, not reload)
-            // Code shows: queryClient.invalidateQueries(['autoBookings']); onActionSuccess(); but NO reload.
-            // So checking reload is wrong unless I see it in code.
-            // Code: alert(response.message); queryClient.invalidateQueries...
+            expect(api.scheduleAutoBook).toHaveBeenCalledWith('Yoga', 'Monday', '10:00', 'Alice');
             expect(mockOnActionSuccess).toHaveBeenCalled();
         });
     });

@@ -1,15 +1,18 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
-import * as api from '../api';
-import { LogEntry, AutoBooking, LiveBooking, PushSubscriptionRecord, SessionRecord, SystemStatus } from '../types';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '../../context/AuthContext';
+import * as api from '../../api';
+import { LogEntry, AutoBooking, LiveBooking, PushSubscriptionRecord, SessionRecord, SystemStatus } from '../../types';
 import { Shield, Activity, List, Clock, Bell, Database, RefreshCw, Terminal, Server, AlertCircle } from 'lucide-react';
 
 const AdminLogsPage = () => {
   const { token } = useAuth();
   const [activeTab, setActiveTab] = useState('status');
 
-  // Data States
-  // Data States
+
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [logFilter, setLogFilter] = useState('ALL');
+
   interface AdminData {
     logs: LogEntry[];
     autoBookings: AutoBooking[];
@@ -19,68 +22,65 @@ const AdminLogsPage = () => {
     status: SystemStatus | null;
   }
 
-  const [data, setData] = useState<AdminData>({
-    logs: [],
-    autoBookings: [],
-    liveBookings: [],
-    pushSubscriptions: [],
-    sessions: [],
-    status: null
+  // React Query Hooks
+  const { data: logsData, isLoading: loadingLogs, error: errorLogs } = useQuery({
+    queryKey: ['adminLogs'],
+    queryFn: () => api.getAdminLogs(),
+    enabled: activeTab === 'logs' && !!token,
+    refetchInterval: autoRefresh ? 5000 : false
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [autoRefresh, setAutoRefresh] = useState(false);
-  const [logFilter, setLogFilter] = useState('ALL');
+  const { data: autoBookings = [], isLoading: loadingAuto, error: errorAuto } = useQuery({
+    queryKey: ['adminAutoBookings'],
+    queryFn: () => api.getAdminAutoBookings(),
+    enabled: activeTab === 'autoBookings' && !!token,
+    refetchInterval: autoRefresh ? 5000 : false
+  });
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      setError(null);
-      let newData = {};
+  const { data: liveBookings = [], isLoading: loadingLive, error: errorLive } = useQuery({
+    queryKey: ['adminLiveBookings'],
+    queryFn: () => api.getAdminLiveBookings(),
+    enabled: activeTab === 'liveBookings' && !!token,
+    refetchInterval: autoRefresh ? 5000 : false
+  });
 
-      switch (activeTab) {
-        case 'logs': {
-          if (token) {
-            const { logs } = await api.getAdminLogs(token);
-            newData = { logs };
-          }
-          break;
-        }
-        case 'autoBookings':
-          if (token) newData = { autoBookings: await api.getAdminAutoBookings(token) };
-          break;
-        case 'pushSubscriptions':
-          if (token) newData = { pushSubscriptions: await api.getAdminPushSubscriptions(token) };
-          break;
-        case 'liveBookings':
-          if (token) newData = { liveBookings: await api.getAdminLiveBookings(token) };
-          break;
-        case 'sessions':
-          if (token) newData = { sessions: await api.getAdminSessions(token) };
-          break;
-        case 'status':
-          if (token) newData = { status: await api.getAdminStatus(token) };
-          break;
-        default:
-          break;
-      }
-      setData(prev => ({ ...prev, ...newData }));
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  }, [token, activeTab]);
+  const { data: pushSubscriptions = [], isLoading: loadingPush, error: errorPush } = useQuery({
+    queryKey: ['adminPushSubscriptions'],
+    queryFn: () => api.getAdminPushSubscriptions(),
+    enabled: activeTab === 'pushSubscriptions' && !!token,
+    refetchInterval: autoRefresh ? 5000 : false
+  });
 
-  useEffect(() => {
-    fetchData();
-    let interval: ReturnType<typeof setInterval>;
-    if (autoRefresh) {
-      interval = setInterval(fetchData, 5000);
-    }
-    return () => clearInterval(interval);
-  }, [fetchData, autoRefresh]);
+  const { data: sessions = [], isLoading: loadingSessions, error: errorSessions } = useQuery({
+    queryKey: ['adminSessions'],
+    queryFn: () => api.getAdminSessions(),
+    enabled: activeTab === 'sessions' && !!token,
+    refetchInterval: autoRefresh ? 5000 : false
+  });
+
+  const { data: status, isLoading: loadingStatus, error: errorStatus } = useQuery({
+    queryKey: ['adminStatus'],
+    queryFn: () => api.getAdminStatus(),
+    enabled: activeTab === 'status' && !!token,
+    refetchInterval: autoRefresh ? 5000 : false
+  });
+
+  // Consolidated loading / error handling
+  const loading = loadingLogs || loadingAuto || loadingLive || loadingPush || loadingSessions || loadingStatus;
+
+  // Aggregate data for rendering
+  const data: AdminData = {
+    logs: logsData?.logs || [],
+    autoBookings,
+    liveBookings,
+    pushSubscriptions,
+    sessions,
+    status: status || null
+  };
+
+  // Find first error if any
+  const error = errorLogs || errorAuto || errorLive || errorPush || errorSessions || errorStatus;
+  const errorMessage = error instanceof Error ? error.message : (error ? 'Error loading data' : null);
 
   const tabs = [
     { id: 'status', label: 'System Status', icon: <Activity size={18} /> },
@@ -121,7 +121,7 @@ const AdminLogsPage = () => {
           <AlertCircle className="text-red-600 mr-4" size={24} />
           <div>
             <h3 className="text-red-800 font-bold">Error Loading Data</h3>
-            <p className="text-red-600 font-medium">{error}</p>
+            <p className="text-red-600 font-medium">{errorMessage}</p>
           </div>
         </div>
       );

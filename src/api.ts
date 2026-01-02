@@ -17,6 +17,38 @@ import {
 export const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
 
 /**
+ * Generic function for authenticated API calls.
+ * Automatically retrieves token from localStorage.
+ */
+const fetchWithAuth = async <T>(endpoint: string, options: RequestInit = {}): Promise<T> => {
+  const token = localStorage.getItem('authToken');
+  const headers: Record<string, string> = {
+    'ngrok-skip-browser-warning': 'true',
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({})); // Handle cases where json() fails
+    if (response.status === 401) {
+      console.error('Authentication error:', errorData.error);
+      // Optional: Trigger logout event or redirect
+    }
+    throw new Error(errorData.error || `API call to ${endpoint} failed`);
+  }
+
+  return response.json();
+};
+
+/**
  * Executes user login.
  */
 export const login = async (email: string, password: string): Promise<LoginResponse> => {
@@ -35,54 +67,30 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 /**
  * Executes user logout on the backend.
  */
-export const logout = (token: string): Promise<{ message: string }> => {
-  return fetchWithAuth('/logout', token, {
+export const logout = (): Promise<{ message: string }> => {
+  return fetchWithAuth('/logout', {
     method: 'POST',
   });
 };
 
-/**
- * Generic function for authenticated API calls.
- */
-const fetchWithAuth = async <T>(endpoint: string, token: string, options: RequestInit = {}): Promise<T> => {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      ...options.headers,
-      'Authorization': `Bearer ${token}`,
-      'ngrok-skip-browser-warning': 'true',
-    },
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    if (response.status === 401) {
-      console.error('Authentication error:', errorData.error);
-    }
-    throw new Error(errorData.error || `API call to ${endpoint} failed`);
-  }
-
-  return response.json();
-};
-
 // Retrieves the list of all available classes.
-export const getClasses = (token: string): Promise<ClassSession[]> => {
-  return fetchWithAuth<ClassSession[]>('/classes', token);
+export const getClasses = (): Promise<ClassSession[]> => {
+  return fetchWithAuth<ClassSession[]>('/classes');
 };
 
 /**
  * Retrieves the list of user's bookings and waiting list entries.
  */
-export const getMyBookings = (token: string): Promise<Booking[]> => {
-  return fetchWithAuth<Booking[]>('/bookings', token);
+export const getMyBookings = (): Promise<Booking[]> => {
+  return fetchWithAuth<Booking[]>('/bookings');
 };
 
 /**
  * Sends a request to book a class (or join a waiting list).
  */
-export const bookClass = (token: string, className: string, date: string, time: string): Promise<ApiResponse> => {
+export const bookClass = (className: string, date: string, time: string): Promise<ApiResponse> => {
   const payload: BookingPayload = { class_name: className, date, time };
-  return fetchWithAuth<ApiResponse>('/book', token, {
+  return fetchWithAuth<ApiResponse>('/book', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -92,9 +100,9 @@ export const bookClass = (token: string, className: string, date: string, time: 
 /**
  * Sends a request to cancel a booking (or a waiting list spot).
  */
-export const cancelBooking = (token: string, className: string, date: string, time: string): Promise<ApiResponse> => {
+export const cancelBooking = (className: string, date: string, time: string): Promise<ApiResponse> => {
   const payload: BookingPayload = { class_name: className, date, time };
-  return fetchWithAuth<ApiResponse>('/cancel', token, {
+  return fetchWithAuth<ApiResponse>('/cancel', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -104,21 +112,21 @@ export const cancelBooking = (token: string, className: string, date: string, ti
 /**
  * Retrieves the static timetable data.
  */
-export const getStaticClasses = (token: string): Promise<Record<string, ClassSession[]>> => {
-  return fetchWithAuth('/static_classes', token);
+export const getStaticClasses = (): Promise<Record<string, ClassSession[]>> => {
+  return fetchWithAuth('/static_classes');
 };
 
 /**
  * Schedules an automatic booking for a class.
  */
-export const scheduleAutoBook = (token: string, className: string, dayOfWeek: string, time: string, instructor: string): Promise<ApiResponse> => {
+export const scheduleAutoBook = (className: string, dayOfWeek: string, time: string, instructor: string): Promise<ApiResponse> => {
   const payload: AutoBookingPayload = {
     class_name: className,
     time: time,
     day_of_week: dayOfWeek,
     instructor: instructor
   };
-  return fetchWithAuth<ApiResponse>('/schedule_auto_book', token, {
+  return fetchWithAuth<ApiResponse>('/schedule_auto_book', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -128,16 +136,16 @@ export const scheduleAutoBook = (token: string, className: string, dayOfWeek: st
 /**
  * Retrieves all scheduled automatic bookings for the current user.
  */
-export const getAutoBookings = (token: string): Promise<AutoBooking[]> => {
-  return fetchWithAuth<AutoBooking[]>('/auto_bookings', token);
+export const getAutoBookings = (): Promise<AutoBooking[]> => {
+  return fetchWithAuth<AutoBooking[]>('/auto_bookings');
 };
 
 /**
  * Cancels a scheduled automatic booking.
  */
-export const cancelAutoBooking = (token: string, bookingId: number): Promise<ApiResponse> => {
+export const cancelAutoBooking = (bookingId: number): Promise<ApiResponse> => {
   const payload = { booking_id: bookingId };
-  return fetchWithAuth<ApiResponse>('/cancel_auto_book', token, {
+  return fetchWithAuth<ApiResponse>('/cancel_auto_book', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -162,8 +170,8 @@ export const getVapidPublicKey = async (): Promise<string> => {
 /**
  * Sends the push subscription to the backend.
  */
-export const subscribeToPush = (token: string, subscription: PushSubscription): Promise<ApiResponse> => {
-  return fetchWithAuth<ApiResponse>('/subscribe-push', token, {
+export const subscribeToPush = (subscription: PushSubscription): Promise<ApiResponse> => {
+  return fetchWithAuth<ApiResponse>('/subscribe-push', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(subscription),
@@ -172,30 +180,30 @@ export const subscribeToPush = (token: string, subscription: PushSubscription): 
 
 // --- Admin Functions ---
 
-export const getAdminLogs = (token: string): Promise<{ logs: LogEntry[] }> => {
-  return fetchWithAuth<{ logs: LogEntry[] }>('/admin/logs', token);
+export const getAdminLogs = (): Promise<{ logs: LogEntry[] }> => {
+  return fetchWithAuth<{ logs: LogEntry[] }>('/admin/logs');
 };
 
-export const getAdminAutoBookings = (token: string): Promise<AutoBooking[]> => {
-  return fetchWithAuth<AutoBooking[]>('/admin/auto_bookings', token);
+export const getAdminAutoBookings = (): Promise<AutoBooking[]> => {
+  return fetchWithAuth<AutoBooking[]>('/admin/auto_bookings');
 };
 
-export const getAdminLiveBookings = (token: string): Promise<LiveBooking[]> => {
-  return fetchWithAuth<LiveBooking[]>('/admin/live_bookings', token);
+export const getAdminLiveBookings = (): Promise<LiveBooking[]> => {
+  return fetchWithAuth<LiveBooking[]>('/admin/live_bookings');
 };
 
-export const getAdminPushSubscriptions = (token: string): Promise<PushSubscriptionRecord[]> => {
-  return fetchWithAuth<PushSubscriptionRecord[]>('/admin/push_subscriptions', token);
+export const getAdminPushSubscriptions = (): Promise<PushSubscriptionRecord[]> => {
+  return fetchWithAuth<PushSubscriptionRecord[]>('/admin/push_subscriptions');
 };
 
-export const getAdminUsers = (token: string): Promise<User[]> => {
-  return fetchWithAuth<User[]>('/admin/users', token); // Assuming User type matches
+export const getAdminUsers = (): Promise<User[]> => {
+  return fetchWithAuth<User[]>('/admin/users');
 };
 
-export const getAdminSessions = (token: string): Promise<SessionRecord[]> => {
-  return fetchWithAuth<SessionRecord[]>('/admin/sessions', token);
+export const getAdminSessions = (): Promise<SessionRecord[]> => {
+  return fetchWithAuth<SessionRecord[]>('/admin/sessions');
 };
 
-export const getAdminStatus = (token: string): Promise<SystemStatus> => {
-  return fetchWithAuth<SystemStatus>('/admin/status', token);
+export const getAdminStatus = (): Promise<SystemStatus> => {
+  return fetchWithAuth<SystemStatus>('/admin/status');
 };

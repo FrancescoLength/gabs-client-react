@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import gabsLogo from '../gabs_logo.png';
+import { useAuth } from '../../context/AuthContext';
+import gabsLogo from '../../gabs_logo.png';
 import { Calendar, Clock, Github, Server, Layout } from 'lucide-react';
 
 function HomePage() {
