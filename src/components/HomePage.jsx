@@ -15,69 +15,72 @@ function HomePage() {
 
   if (isLoggedIn) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-float p-8 mb-8 border border-white/40 relative overflow-hidden">
+      <div className="container mx-auto px-4 py-6 md:py-8">
+        {/* Welcome Card */}
+        <div className="bg-white rounded-2xl shadow-float p-5 md:p-8 mb-6 md:mb-8 border border-white/40 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red-light/20 rounded-full blur-3xl transform translate-x-10 -translate-y-10"></div>
-          <div className="flex items-center space-x-6 relative z-10">
-            <div className="h-16 w-16 bg-brand-red-light/30 rounded-2xl flex items-center justify-center text-3xl shadow-sm text-brand-red">
+          <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6 relative z-10">
+            <div className="h-12 w-12 md:h-16 md:w-16 bg-brand-red-light/30 rounded-2xl flex items-center justify-center text-2xl md:text-3xl shadow-sm text-brand-red shrink-0">
               👋
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-brand-dark mb-1">Welcome back, <span className="text-brand-red">{user ? user.split('@')[0] : 'Athlete'}</span>!</h1>
-              <p className="text-brand-muted text-lg">Ready to crush your goals today?</p>
+            <div className="min-w-0"> {/* min-w-0 forces truncation if needed */}
+              <h1 className="text-2xl md:text-3xl font-bold text-brand-dark mb-1 truncate">
+                Welcome back, <span className="text-brand-red">{user ? user.split('@')[0] : 'Athlete'}</span>!
+              </h1>
+              <p className="text-brand-muted text-base md:text-lg">Ready to crush your goals today?</p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Link to="/live-booking" className="group block p-8 bg-white rounded-2xl shadow-sm hover:shadow-float border border-white hover:border-brand-red/10 transition-all duration-300 hover:-translate-y-1">
-            <div className="flex items-start justify-between mb-6">
-              <div className="h-14 w-14 bg-brand-red-light/20 rounded-2xl flex items-center justify-center text-brand-red mb-4 group-hover:scale-110 group-hover:bg-brand-red group-hover:text-white transition-all duration-300">
-                <Calendar size={28} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
+          <Link to="/live-booking" className="group block p-6 md:p-8 bg-white rounded-2xl shadow-sm hover:shadow-float border border-white hover:border-brand-red/10 transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-start justify-between mb-4 md:mb-6">
+              <div className="h-12 w-12 md:h-14 md:w-14 bg-brand-red-light/20 rounded-2xl flex items-center justify-center text-brand-red mb-2 md:mb-4 group-hover:scale-110 group-hover:bg-brand-red group-hover:text-white transition-all duration-300">
+                <Calendar className="w-6 h-6 md:w-7 md:h-7" />
               </div>
               <div className="text-gray-300 group-hover:text-brand-red/20 transition-colors">
                 <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14m-7-7 7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-brand-dark mb-2 group-hover:text-brand-red transition-colors">Live Booking</h3>
-            <p className="text-brand-muted">View real-time schedule and book your next session instantly.</p>
+            <h3 className="text-xl md:text-2xl font-bold text-brand-dark mb-2 group-hover:text-brand-red transition-colors">Live Booking</h3>
+            <p className="text-brand-muted text-sm md:text-base">View real-time schedule and book your next session instantly.</p>
           </Link>
 
-          <Link to="/auto-booking" className="group block p-8 bg-white rounded-2xl shadow-sm hover:shadow-float border border-white hover:border-brand-red/10 transition-all duration-300 hover:-translate-y-1">
-            <div className="flex items-start justify-between mb-6">
-              <div className="h-14 w-14 bg-brand-dark/5 rounded-2xl flex items-center justify-center text-brand-dark mb-4 group-hover:scale-110 group-hover:bg-brand-dark group-hover:text-white transition-all duration-300">
-                <Clock size={28} />
+          <Link to="/auto-booking" className="group block p-6 md:p-8 bg-white rounded-2xl shadow-sm hover:shadow-float border border-white hover:border-brand-red/10 transition-all duration-300 hover:-translate-y-1">
+            <div className="flex items-start justify-between mb-4 md:mb-6">
+              <div className="h-12 w-12 md:h-14 md:w-14 bg-brand-dark/5 rounded-2xl flex items-center justify-center text-brand-dark mb-2 md:mb-4 group-hover:scale-110 group-hover:bg-brand-dark group-hover:text-white transition-all duration-300">
+                <Clock className="w-6 h-6 md:w-7 md:h-7" />
               </div>
               <div className="text-gray-300 group-hover:text-brand-dark/20 transition-colors">
                 <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12h14m-7-7 7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-brand-dark mb-2 group-hover:text-brand-dark transition-colors">Auto Booking</h3>
-            <p className="text-brand-muted">Set up recurring bookings. Let GABS do the heavy lifting.</p>
+            <h3 className="text-xl md:text-2xl font-bold text-brand-dark mb-2 group-hover:text-brand-dark transition-colors">Auto Booking</h3>
+            <p className="text-brand-muted text-sm md:text-base">Set up recurring bookings. Let GABS do the heavy lifting.</p>
           </Link>
         </div>
 
-        <div className="bg-brand-dark rounded-2xl p-8 text-white shadow-xl relative overflow-hidden group">
+        <div className="bg-brand-dark rounded-2xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-brand-red rounded-full blur-[100px] opacity-20 transform translate-x-20 -translate-y-20 group-hover:opacity-30 transition-opacity duration-500"></div>
 
           <div className="relative z-10">
-            <div className="flex flex-col md:flex-row items-baseline justify-between mb-6">
+            <div className="flex flex-col md:flex-row items-baseline justify-between mb-4 md:mb-6">
               <div>
                 <span className="inline-block px-3 py-1 bg-brand-red/20 text-brand-red-light rounded-full text-xs font-bold tracking-wider mb-3 border border-brand-red/20">PRO TIP</span>
-                <h3 className="text-2xl font-bold">Install as App</h3>
-                <p className="text-gray-400 mt-2">Add to your home screen for the best experience.</p>
+                <h3 className="text-xl md:text-2xl font-bold">Install as App</h3>
+                <p className="text-gray-400 mt-2 text-sm md:text-base">Add to your home screen for the best experience.</p>
               </div>
               <div className="text-4xl opacity-20 hidden md:block">📱</div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-white/10">
+            <div className="grid md:grid-cols-2 gap-4 md:gap-6 pt-4 border-t border-white/10">
               {/* iOS Instructions */}
-              <div className="bg-white/5 rounded-xl p-5 hover:bg-white/10 transition-colors">
-                <div className="flex items-center mb-3">
-                  <span className="text-2xl mr-3">🍎</span>
-                  <h4 className="font-bold text-lg">iPhone (Safari)</h4>
+              <div className="bg-white/5 rounded-xl p-4 md:p-5 hover:bg-white/10 transition-colors">
+                <div className="flex items-center mb-2 md:mb-3">
+                  <span className="text-xl md:text-2xl mr-3">🍎</span>
+                  <h4 className="font-bold text-base md:text-lg">iPhone (Safari)</h4>
                 </div>
-                <ol className="text-sm text-gray-400 space-y-2 list-decimal px-4">
+                <ol className="text-xs md:text-sm text-gray-400 space-y-2 list-decimal px-4">
                   <li>Tap the <span className="text-white font-bold">Share</span> button at the bottom.</li>
                   <li>Scroll down and tap <span className="text-white font-bold">Add to Home Screen</span>.</li>
                   <li>Tap <span className="text-white font-bold">Add</span> to confirm.</li>
@@ -85,12 +88,12 @@ function HomePage() {
               </div>
 
               {/* Android Instructions */}
-              <div className="bg-white/5 rounded-xl p-5 hover:bg-white/10 transition-colors">
-                <div className="flex items-center mb-3">
-                  <span className="text-2xl mr-3">🤖</span>
-                  <h4 className="font-bold text-lg">Android (Chrome)</h4>
+              <div className="bg-white/5 rounded-xl p-4 md:p-5 hover:bg-white/10 transition-colors">
+                <div className="flex items-center mb-2 md:mb-3">
+                  <span className="text-xl md:text-2xl mr-3">🤖</span>
+                  <h4 className="font-bold text-base md:text-lg">Android (Chrome)</h4>
                 </div>
-                <ol className="text-sm text-gray-400 space-y-2 list-decimal px-4">
+                <ol className="text-xs md:text-sm text-gray-400 space-y-2 list-decimal px-4">
                   <li>Tap the <span className="text-white font-bold">Menu (⋮)</span> at the top right.</li>
                   <li>Select <span className="text-white font-bold">Add to Home screen</span>.</li>
                   <li>Tap <span className="text-white font-bold">Install</span> if prompted.</li>
@@ -101,37 +104,37 @@ function HomePage() {
         </div>
 
         {/* Open Source Section - Dashboard */}
-        <div className="mt-8 bg-white rounded-2xl p-8 shadow-sm border border-gray-100 relative overflow-hidden">
+        <div className="mt-6 md:mt-8 bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <div className="p-2 bg-gray-100 rounded-lg text-gray-700">
-                  <Github size={24} />
+                  <Github className="w-5 h-5 md:w-6 md:h-6" />
                 </div>
-                <h3 className="text-xl font-bold text-brand-dark">Fully Open Source</h3>
+                <h3 className="text-lg md:text-xl font-bold text-brand-dark">Fully Open Source</h3>
               </div>
-              <p className="text-gray-500 max-w-lg">
-                GABS is transparent and community-driven. Check out the code, contribute, or leave a star!
+              <p className="text-gray-500 max-w-lg text-sm md:text-base">
+                GABS is transparent. Check out the code and leave a star!
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <a
                 href="https://github.com/FrancescoLength/gabs-api-server"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center px-5 py-3 rounded-xl bg-gray-900 text-white font-bold hover:bg-gray-800 transition shadow-lg shadow-gray-900/20"
+                className="flex items-center justify-center px-4 py-3 md:px-5 rounded-xl bg-gray-900 text-white font-bold hover:bg-gray-800 transition shadow-lg shadow-gray-900/20 text-sm md:text-base"
               >
-                <Server size={18} className="mr-2" />
+                <Server className="w-4 h-4 md:w-[18px] mr-2" />
                 Backend Repo
               </a>
               <a
                 href="https://github.com/FrancescoLength/gabs-client-react"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center px-5 py-3 rounded-xl bg-white text-gray-900 border-2 border-gray-200 font-bold hover:border-gray-900 hover:bg-gray-50 transition"
+                className="flex items-center justify-center px-4 py-3 md:px-5 rounded-xl bg-white text-gray-900 border-2 border-gray-200 font-bold hover:border-gray-900 hover:bg-gray-50 transition text-sm md:text-base"
               >
-                <Layout size={18} className="mr-2" />
+                <Layout className="w-4 h-4 md:w-[18px] mr-2" />
                 Frontend Repo
               </a>
             </div>
