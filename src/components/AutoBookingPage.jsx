@@ -1,4 +1,4 @@
-import React from 'react';
+
 import AutoBookingScheduler from './AutoBookingScheduler';
 import MyAutoBookings from './MyAutoBookings';
 import { useAuth } from '../context/AuthContext';
@@ -48,7 +48,7 @@ function AutoBookingPage() {
     <div className="mb-20">
       <div className="mb-8">
         <h1 className="text-3xl lg:text-4xl font-extrabold text-brand-dark mb-2 tracking-tight">Auto Booking</h1>
-        <p className="text-brand-muted text-lg">Put your gym schedule on autopilot. GABS handles the rest. Choose the day of the week and the class you want to book. Then click on "Add Auto-Book" button.</p>
+        <p className="text-brand-muted text-lg">Put your gym schedule on autopilot. GABS handles the rest. Choose the day of the week and the class you want to book. Then click on &quot;Add Auto-Book&quot; button.</p>
       </div>
 
       <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
