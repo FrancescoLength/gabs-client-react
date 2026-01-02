@@ -1,7 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 import { test, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 
+// Mock BrowserRouter to avoid window.location issues in tests
+vi.mock('react-router-dom', async () => {
+    const actual = await vi.importActual('react-router-dom');
+    return {
+        ...actual,
+        BrowserRouter: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+    };
+});
 // Mock api.js to avoid network calls
 // vi.mock works similarly to jest.mock
 vi.mock('./api', () => ({
