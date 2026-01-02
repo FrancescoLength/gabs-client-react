@@ -1,23 +1,24 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-
-// Mock must be defined before imports that use it, relying on hoisting is good but explicit is better for absolute safety
-vi.mock('../../context/AuthContext', () => ({
-    useAuth: () => ({
-        isLoggedIn: false,
-        user: null,
-    }),
-}));
-
+import { AuthContext } from '../../context/AuthContext';
 import HomePage from '../HomePage';
 
 describe('HomePage', () => {
     it('renders public landing page when not logged in', () => {
+        const mockAuthContext = {
+            isLoggedIn: false,
+            user: null,
+            login: async () => { },
+            logout: async () => { }
+        };
+
         render(
-            <BrowserRouter>
-                <HomePage />
-            </BrowserRouter>
+            <AuthContext.Provider value={mockAuthContext}>
+                <BrowserRouter>
+                    <HomePage />
+                </BrowserRouter>
+            </AuthContext.Provider>
         );
 
         // Check for main heading parts

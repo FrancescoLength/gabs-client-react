@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useEffect, useMemo, useCall
 import * as api from '../api';
 import { jwtDecode } from 'jwt-decode';
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('authToken'));
