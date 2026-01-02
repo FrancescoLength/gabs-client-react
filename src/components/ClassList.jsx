@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 import { format, parse } from 'date-fns';
@@ -12,7 +12,7 @@ const formatDateForApi = (dateString) => {
     try {
         const date = parseDateString(dateString);
         return format(date, 'yyyy-MM-dd');
-    } catch (e) {
+    } catch {
         console.error("Invalid date format:", dateString);
         return null;
     }
@@ -22,7 +22,7 @@ const getDayOfWeek = (dateString) => {
     try {
         const date = parseDateString(dateString);
         return format(date, 'EEEE');
-    } catch (e) {
+    } catch {
         return '';
     }
 };
@@ -96,8 +96,7 @@ function ClassList({ classes, onActionSuccess }) {
                 </div>
             )}
 
-            {Object.keys(groupedClasses).map((date, idx) => {
-                const isOpen = openSections.includes(date) || (idx === 0 && openSections.length === 0);
+            {Object.keys(groupedClasses).map((date) => {
                 const isExpanded = openSections.includes(date);
 
                 return (

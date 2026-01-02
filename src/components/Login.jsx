@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, Lock, Mail } from 'lucide-react';
+import { Lock, Mail } from 'lucide-react';
 import gabsLogo from '../gabs_logo.png';
 
 function Login() {

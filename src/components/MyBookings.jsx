@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 import { format, parse } from 'date-fns';
-import { useQueryClient } from '@tanstack/react-query';
-import { Clock, Calendar, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react';
+import { Clock, Calendar, Trash2 } from 'lucide-react';
+
 
 // Similar parser logic
 const parseBookingDate = (dateString, year = new Date().getFullYear()) => {
@@ -20,7 +20,7 @@ const parseBookingDate = (dateString, year = new Date().getFullYear()) => {
 
 const MyBookings = ({ bookings, onActionSuccess }) => {
     const { token } = useAuth();
-    const queryClient = useQueryClient();
+
     const [loadingId, setLoadingId] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
 
@@ -65,7 +65,6 @@ const MyBookings = ({ bookings, onActionSuccess }) => {
                 // Format date for API (YYYY-MM-DD)
                 const apiDateStr = bookingDate ? format(bookingDate, 'yyyy-MM-dd') : null;
 
-                const isPast = bookingDate && bookingDate < new Date();
                 const isLoading = loadingId === uniqueId;
 
                 // Cancellation deadline logic

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 import { Shield, Activity, List, Clock, Bell, Database, RefreshCw, Terminal, Server, AlertCircle } from 'lucide-react';
@@ -22,17 +22,18 @@ const AdminLogsPage = () => {
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [logFilter, setLogFilter] = useState('ALL');
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       setError(null);
       let newData = {};
 
       switch (activeTab) {
-        case 'logs':
+        case 'logs': {
           const { logs } = await api.getAdminLogs(token);
           newData = { logs };
           break;
+        }
         case 'autoBookings':
           newData = { autoBookings: await api.getAdminAutoBookings(token) };
           break;
@@ -57,7 +58,7 @@ const AdminLogsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, activeTab]);
 
   useEffect(() => {
     fetchData();
@@ -66,7 +67,7 @@ const AdminLogsPage = () => {
       interval = setInterval(fetchData, 5000);
     }
     return () => clearInterval(interval);
-  }, [token, activeTab, autoRefresh]);
+  }, [fetchData, autoRefresh]);
 
   const tabs = [
     { id: 'status', label: 'System Status', icon: <Activity size={18} /> },
@@ -154,7 +155,7 @@ const AdminLogsPage = () => {
           </div>
         ) : null;
 
-      case 'logs':
+      case 'logs': {
         const filteredLogs = data.logs.filter(log => {
           if (logFilter === 'ALL') return true;
           return log.level === logFilter;
@@ -198,11 +199,12 @@ const AdminLogsPage = () => {
             </div>
           </div>
         );
+      }
 
       case 'autoBookings':
       case 'liveBookings':
       case 'pushSubscriptions':
-      case 'sessions':
+      case 'sessions': {
         const getColumns = () => {
           if (activeTab === 'autoBookings') return ['ID', 'User', 'Class', 'Time', 'Day', 'Status', 'Attempts'];
           if (activeTab === 'liveBookings') return ['ID', 'User', 'Class', 'Date', 'Time', 'Reminder', 'AutoID'];
@@ -286,6 +288,7 @@ const AdminLogsPage = () => {
             </div>
           </div>
         );
+      }
 
       default:
         return null;

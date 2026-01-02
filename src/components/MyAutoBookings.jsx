@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 import { useQueryClient } from '@tanstack/react-query';
-import { Clock, Calendar, Repeat, Trash2, AlertCircle } from 'lucide-react';
+import { Clock, Repeat, Trash2 } from 'lucide-react';
 
 function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }) {
     const { token } = useAuth();
