@@ -1,76 +1,117 @@
 # GABS Client React Application
-<img width="1236" height="524" alt="image" src="https://github.com/user-attachments/assets/d701a678-3fb2-4e8c-9a28-fc95fad03382" />
+
+![GABS Banner](https://github.com/user-attachments/assets/d701a678-3fb2-4e8c-9a28-fc95fad03382)
+
+This is the modern **Frontend React** application for the **Gym Automatic Booking System (GABS)**. It interacts with the GABS API to automate gym class bookings, track live availability, and manage user schedules. 
+
+The project has been recently refactored to use **TypeScript**, **Vite**, **Tailwind CSS**, and a **Feature-Based Architecture**.
+
+## 🚀 Features
+
+-   **Automatic Booking**: Schedule recurring bookings (e.g., "Every Monday @ 9:00") handled by the backend.
+-   **Live Booking**: Real-time view of available classes with instant booking/cancellation.
+-   **Smart Notifications**: Push notifications for booking confirmations and reminders.
+-   **PWA Support**: Installable as a native-like app on iOS and Android.
+-   **Admin Dashboard**: comprehensive logging, user management, and system health monitoring.
+-   **Responsive Design**: Mobile-first UI built with Tailwind CSS.
+
+## 🛠️ Tech Stack
+
+-   **Core**: React 19, TypeScript 5.9
+-   **Build Tool**: Vite 7
+-   **Styling**: Tailwind CSS 4
+-   **State/Data**: TanStack Query v5 (React Query)
+-   **Routing**: React Router v7
+-   **Testing**: Vitest, React Testing Library
+-   **Linting**: ESLint (Flat Config)
+
+## 📂 Project Structure
+
+This project uses a **Feature-Based Architecture** to ensure scalability:
+
+```
+src/
+├── api.ts              # Centralized API client with automated Token Management
+├── components/         # Shared UI components (Input, Button, Layouts)
+├── context/            # Global state (AuthContext, ThemeContext)
+├── features/           # Domain-specific logic and pages
+│   ├── admin/          # Admin dashboard, logs, system status
+│   └── booking/        # Booking logic, class lists, schedules
+├── hooks/              # Custom React hooks (usePushNotifications, etc.)
+├── types/              # Centralized TypeScript definitions
+└── utils/              # Helper functions (Date parsing, formatting)
+```
+
+## ⚡ Getting Started
+
+### 1. Prerequisites
+-   **Node.js**: LTS version (v18+ recommended)
+-   **Backend**: Ensure the [GABS API Server](https://github.com/FrancescoLength/gabs-api-server) is running.
+
+### 2. Installation
+```bash
+git clone https://github.com/FrancescoLength/gabs-client-react.git
+cd gabs-client-react
+npm install
+```
+
+### 3. Environment Configuration
+Create a `.env` file in the root directory. **Note**: Vite requires variables to start with `VITE_`.
+
+```env
+# .env
+VITE_API_URL=http://localhost:5000  # URL of your Python Backend
+```
+
+### 4. Running the App
+```bash
+# Start Development Server (Hot Reload)
+npm start
+# App runs at: http://localhost:5173
+```
+
+## 📜 Available Scripts
+
+| Command           | Description                                                      |
+| :---------------- | :--------------------------------------------------------------- |
+| `npm start`       | Starts the Vite development server.                              |
+| `npm run build`   | Type-checks (`tsc`) and builds the production bundle to `dist/`. |
+| `npm run serve`   | Previews the production build locally.                           |
+| `npm run lint`    | Runs ESLint to check for code quality issues.                    |
+| `npm run test`    | Runs the Vitest test suite in watch mode.                        |
+| `npm run test:ci` | Runs all tests once (useful for CI/CD pipelines).                |
+
+## 🧪 Testing
+
+The project maintains a **100% passing test suite**.
+Tests are co-located with components in `__tests__` directories.
+
+-   **Unit Tests**: Verified with `Vitest`.
+-   **Integration Tests**: Verified with `React Testing Library`.
+
+To run tests:
+```bash
+npm run test
+```
 
 
-This is the frontend React application for the Gym Automatic Booking System (GABS). It provides a user interface to interact with the GABS API, allowing users to manage their gym class bookings, schedule auto-bookings, and receive push notifications.
+## 🚀 CI/CD & Deployment
 
-## Features
+This project uses **GitHub Actions** for Continuous Integration and **Vercel** for Continuous Deployment.
 
--   **Automatic Booking**: Set up recurring schedules (e.g., "Every Monday at 9:00 AM") and GABS handles the rest.
--   **Live Booking**: View real-time class availability and book instantly.
--   **Smart Notifications**: Receive alerts for successful bookings or useful reminders.
--   **Progressive Web App (PWA)**: Install GABS on your iOS or Android home screen for a app-like experience.
--   **Open Source**: Fully transparent codebase for both [Frontend](https://github.com/FrancescoLength/gabs-client-react) and [Backend](https://github.com/FrancescoLength/gabs-api-server).
--   **Admin Panel**: Monitor logs, manage users, and check server health.
+### 🔄 GitHub Actions Workflow
+The workflow is defined in `.github/workflows/frontend.yml`:
+1.  **Test**: On every `push` or `pull_request` to `master`, it:
+    -   Installs dependencies (`npm ci`).
+    -   Runs linting checks (`npm run lint`).
+    -   Runs the full test suite (`npm run test:ci`).
+2.  **Deploy**: If tests pass (and it's a push to `master`), it triggers a deployment to Vercel.
 
-## Setup and Installation
+### ☁️ Vercel Deployment
+The application is automatically deployed to Vercel.
+-   **Production Build**: `npm run build` is executed.
+-   **Routing**: `vercel.json` handles SPA routing (redirects all requests to `index.html`).
+-   **Proxy**: The Vercel deployment connects to your backend via the API URL configured in Vercel's Environment Variables.
 
-1.  **Prerequisites:**
-    -   Node.js (LTS version recommended)
-    -   npm or Yarn
-    -   **GABS API Server:** Ensure the [GABS API Server](https://github.com/FrancescoLength/gabs-api-server) is set up and running.
-
-2.  **Installation:**
-    ```bash
-    # Navigate to the project directory
-    cd gabs-client-react
-
-    # Install dependencies
-    npm install
-    ```
-
-3.  **Configuration (.env file):**
-    This project uses environment variables for configuration.
-    -   Create a file named `.env` in the root of the `gabs-client-react` directory.
-    -   Copy the content from `.env.example` (if available) or use the template below.
-    -   **Do NOT commit your `.env` file to Git!**
-
-    ```env
-    # Example .env content
-    VITE_API_URL=http://localhost:5000 # Or your ngrok URL
-    ```
-    *Note: We now use Vite, so environment variables must be prefixed with `VITE_` (except standard ones).*
-
-4.  **Running the Application:**
-    ```bash
-    # Start the development server
-    npm start
-    ```
-    The application will be available at `http://localhost:5173` (default Vite port).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start` (or `npm run dev`)
-
-Runs the app in the development mode using Vite.
-Open [http://localhost:5173](http://localhost:5173) to view it in your browser.
-
-Runs the app in the development mode.
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.
-You may also see any lint errors in the console.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.
-Your app is ready to be deployed!
-
-## License
-
+## 📄 License
 This project is licensed under the [GNU General Public License v3.0](LICENSE).
