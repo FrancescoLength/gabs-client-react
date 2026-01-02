@@ -25,10 +25,13 @@ describe('LiveBookingPage', () => {
     let queryClient;
 
     beforeEach(() => {
-        vi.clearAllMocks();
+        vi.resetAllMocks();
         queryClient = new QueryClient({
             defaultOptions: {
-                queries: { retry: false },
+                queries: {
+                    retry: false,
+                    networkMode: 'always'
+                },
             },
         });
     });
