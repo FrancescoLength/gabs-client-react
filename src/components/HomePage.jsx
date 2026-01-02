@@ -23,8 +23,8 @@ function HomePage() {
             <div className="h-12 w-12 md:h-16 md:w-16 bg-brand-red-light/30 rounded-2xl flex items-center justify-center text-2xl md:text-3xl shadow-sm text-brand-red shrink-0">
               👋
             </div>
-            <div className="min-w-0"> {/* min-w-0 forces truncation if needed */}
-              <h1 className="text-2xl md:text-3xl font-bold text-brand-dark mb-1 truncate">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-2xl md:text-3xl font-bold text-brand-dark mb-1 break-words overflow-hidden">
                 Welcome back, <span className="text-brand-red">{user ? user.split('@')[0] : 'Athlete'}</span>!
               </h1>
               <p className="text-brand-muted text-base md:text-lg">Ready to crush your goals today?</p>
