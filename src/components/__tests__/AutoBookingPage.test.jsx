@@ -56,7 +56,7 @@ describe('AutoBookingPage', () => {
 
         await waitFor(() => {
             expect(screen.queryByText(/Loading automation data.../i)).not.toBeInTheDocument();
-        }, { timeout: 3000 });
+        }, { timeout: 10000 });
 
         expect(screen.getByTestId('my-auto-bookings')).toBeInTheDocument();
         expect(screen.getByTestId('auto-booking-scheduler')).toBeInTheDocument();

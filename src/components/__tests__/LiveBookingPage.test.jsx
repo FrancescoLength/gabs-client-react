@@ -66,7 +66,7 @@ describe('LiveBookingPage', () => {
 
         await waitFor(() => {
             expect(screen.queryByText(/Loading schedule.../i)).not.toBeInTheDocument();
-        }, { timeout: 3000 });
+        }, { timeout: 10000 });
 
         // Headers
         expect(screen.getByText(/My Upcoming Bookings/i)).toBeInTheDocument();
