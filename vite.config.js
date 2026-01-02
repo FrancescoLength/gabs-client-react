@@ -17,15 +17,9 @@ export default defineConfig({
         environment: 'jsdom',
         setupFiles: './src/setupTests.js',
         css: false,
-        css: false,
-        // Use forks with singleFork in CI for maximum stability (avoid threads)
-        pool: process.env.CI ? 'forks' : 'threads',
-        poolOptions: {
-            forks: {
-                singleFork: !!process.env.CI,
-            },
-        },
         testTimeout: 30000,
         hookTimeout: 30000,
+        // CI Optimization: Disable parallelism for stability
+        fileParallelism: !process.env.CI,
     },
 });
