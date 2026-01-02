@@ -30,24 +30,17 @@ const MyBookings = ({ bookings, onActionSuccess }) => {
     }, []);
 
     const handleCancel = async (uniqueId, className, dateStr, time) => {
-        console.log('handleCancel called for:', uniqueId);
-        // if (!window.confirm('Are you sure you want to cancel this booking?')) {
-        //     console.log('Cancelled by user confirmation');
-        //     return;
-        // }
+        // window.confirm removed to fix UI blocking issue
 
-        console.log('Proceeding with cancellation...', token);
         setLoadingId(uniqueId);
         try {
             // API expects date in YYYY-MM-DD format
             const response = await api.cancelBooking(token, className, dateStr, time);
-            console.log('API response:', response);
 
             // Show alert only on success/error to confirm action completed
             alert(response.message || 'Cancelled successfully');
             onActionSuccess();
         } catch (err) {
-            console.error('Cancellation error:', err);
             alert(err.message);
         } finally {
             setLoadingId(null);
@@ -130,11 +123,9 @@ const MyBookings = ({ bookings, onActionSuccess }) => {
                             <button
                                 className="relative z-10 w-full flex items-center justify-center px-4 py-2 border border-red-100 shadow-sm text-sm font-bold rounded-xl text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 transition-colors disabled:opacity-50"
                                 onClick={() => {
-                                    console.log('Cancel clicked', uniqueId, booking.name, apiDateStr, booking.time);
                                     if (apiDateStr) {
                                         handleCancel(uniqueId, booking.name, apiDateStr, booking.time);
                                     } else {
-                                        console.error('Error parsing booking date:', booking.date);
                                         alert("Error parsing booking date");
                                     }
                                 }}

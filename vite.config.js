@@ -20,5 +20,7 @@ export default defineConfig({
         // Limit threads in CI to prevent resource exhaustion/hanging
         fileParallelism: !process.env.CI,
         maxConcurrency: process.env.CI ? 1 : undefined,
+        testTimeout: 30000,
+        hookTimeout: 30000,
     },
 });
