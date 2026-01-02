@@ -28,6 +28,6 @@ jobs:
       run: npm ci
 
     - name: Run tests
-      run: npm test -- run --reporter=verbose
+      run: npm test -- run --reporter=verbose --poolOptions.threads.maxThreads=1 --poolOptions.threads.minThreads=1
       env:
         CI: true
