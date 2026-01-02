@@ -5,13 +5,12 @@ This is the frontend React application for the Gym Automatic Booking System (GAB
 
 ## Features
 
--   User authentication and session management.
--   View available gym classes.
--   Book and cancel gym classes.
--   View personal upcoming bookings.
--   Schedule and manage recurring auto-bookings.
--   Receive push notifications for cancellation reminders.
--   **Admin Panel:** Dedicated section for administrators to monitor backend logs, auto-bookings, push subscriptions, and server status.
+-   **Automatic Booking**: Set up recurring schedules (e.g., "Every Monday at 9:00 AM") and GABS handles the rest.
+-   **Live Booking**: View real-time class availability and book instantly.
+-   **Smart Notifications**: Receive alerts for successful bookings or useful reminders.
+-   **Progressive Web App (PWA)**: Install GABS on your iOS or Android home screen for a app-like experience.
+-   **Open Source**: Fully transparent codebase for both [Frontend](https://github.com/FrancescoLength/gabs-client-react) and [Backend](https://github.com/FrancescoLength/gabs-api-server).
+-   **Admin Panel**: Monitor logs, manage users, and check server health.
 
 ## Setup and Installation
 
@@ -27,37 +26,35 @@ This is the frontend React application for the Gym Automatic Booking System (GAB
 
     # Install dependencies
     npm install
-    # or
-    yarn install
     ```
 
 3.  **Configuration (.env file):**
-    This project uses environment variables for configuration, including the backend API URL and admin email.
+    This project uses environment variables for configuration.
     -   Create a file named `.env` in the root of the `gabs-client-react` directory.
-    -   Copy the content from `.env.example` into your new `.env` file.
-    -   Fill in the required values. **Do NOT commit your `.env` file to Git!**
+    -   Copy the content from `.env.example` (if available) or use the template below.
+    -   **Do NOT commit your `.env` file to Git!**
 
+    ```env
+    # Example .env content
+    VITE_API_URL=http://localhost:5000 # Or your ngrok URL
     ```
-    # Example .env content (fill in your actual values)
-    REACT_APP_API_URL=http://localhost:5000 # Or your ngrok URL, e.g., https://xxxx.ngrok-free.dev
-    REACT_APP_ADMIN_EMAIL=admin@gmail.com # The email address of the admin user
-    ```
-    **Note:** `REACT_APP_API_URL` should point to your running GABS API Server. During local development, this might be `http://localhost:5000` or your `ngrok` URL.
+    *Note: We now use Vite, so environment variables must be prefixed with `VITE_` (except standard ones).*
 
 4.  **Running the Application:**
     ```bash
     # Start the development server
     npm start
-    # or
-    yarn start
     ```
-    The application will be available at `http://localhost:3000`.
+    The application will be available at `http://localhost:5173` (default Vite port).
 
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm start` (or `npm run dev`)
+
+Runs the app in the development mode using Vite.
+Open [http://localhost:5173](http://localhost:5173) to view it in your browser.
 
 Runs the app in the development mode.
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
