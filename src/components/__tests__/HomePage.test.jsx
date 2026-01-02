@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+
 import HomePage from '../HomePage';
 import { describe, it, expect, vi } from 'vitest';
 
-// Mock the AuthContext
+// Mock the AuthContext hook directly since AuthContext object is not exported
 vi.mock('../../context/AuthContext', () => ({
     useAuth: () => ({
         isLoggedIn: false,

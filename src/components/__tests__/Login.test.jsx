@@ -46,7 +46,7 @@ test('submits form with credentials', async () => {
     renderLogin();
     const emailInput = screen.getByLabelText(/Email Address/i);
     const passwordInput = screen.getByLabelText(/Password/i);
-    const submitButton = screen.getByRole('button', { name: /Sign In/i });
+    const submitButton = screen.getAllByRole('button', { name: /Sign In/i })[0];
 
     fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
