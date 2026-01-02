@@ -65,6 +65,7 @@ describe('LiveBookingPage', () => {
         renderWithClient(<LiveBookingPage />);
 
         await waitFor(() => {
+            expect(api.getMyBookings).toHaveBeenCalled();
             expect(screen.queryByText(/Loading schedule.../i)).not.toBeInTheDocument();
         }, { timeout: 10000 });
 
