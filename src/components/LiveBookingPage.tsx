@@ -60,11 +60,11 @@ function LiveBookingPage() {
       // OR I should update ClassSession. The prompt asked to replace `any`.
       // Let's use `any` for `c` inside this specific filter for now to avoid breaking if my ClassSession definition is too narrow.
       // Actually, looking at the code `parseAvailableClassDate(c.date)`, it definitely has a date.
-      const cTyped = c as any;
-      const dateObj = parseAvailableClassDate(cTyped.date);
+      // ClassSession now includes 'date' property.
+      const dateObj = parseAvailableClassDate(c.date);
       if (!dateObj) return true;
       const dateStr = format(dateObj, 'yyyy-MM-dd');
-      return !bookedSet.has(`${cTyped.name}|${dateStr}|${cTyped.start_time}`);
+      return !bookedSet.has(`${c.name}|${dateStr}|${c.start_time}`);
     });
 
   }, [myBookings, allClasses]);

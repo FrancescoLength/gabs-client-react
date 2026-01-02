@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import * as api from '../api';
 import { format, parse } from 'date-fns';
 import { ChevronDown, ChevronUp, Calendar, Clock, User, CheckCircle, AlertCircle } from 'lucide-react';
+import { ClassSession } from '../types';
 
 // Helper to parse "dd/mm/yyyy" to Date object
 const parseDateString = (dateString: string) => parse(dateString, 'dd/MM/yyyy', new Date());
@@ -28,7 +29,7 @@ const getDayOfWeek = (dateString: string) => {
 };
 
 interface ClassListProps {
-    classes: any[];
+    classes: ClassSession[];
     onActionSuccess: () => void;
 }
 
@@ -44,7 +45,7 @@ function ClassList({ classes, onActionSuccess }: ClassListProps) {
         );
     };
 
-    const handleBook = async (item: any) => {
+    const handleBook = async (item: ClassSession) => {
         const dateForApi = formatDateForApi(item.date);
         if (!dateForApi) {
             setError("Invalid date format for booking.");
@@ -65,8 +66,8 @@ function ClassList({ classes, onActionSuccess }: ClassListProps) {
                 setError(result.message);
             }
             onActionSuccess();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Unknown error');
         } finally {
             setLoadingId(null);
         }
@@ -84,14 +85,14 @@ function ClassList({ classes, onActionSuccess }: ClassListProps) {
         );
     }
 
-    const groupedClasses = classes.reduce((acc: any, item: any) => {
+    const groupedClasses = classes.reduce((acc: Record<string, ClassSession[]>, item: ClassSession) => {
         const date = item.date;
         if (!acc[date]) {
             acc[date] = [];
         }
         acc[date].push(item);
         return acc;
-    }, {});
+    }, {} as Record<string, ClassSession[]>);
 
     return (
         <div className="space-y-6">
@@ -127,7 +128,7 @@ function ClassList({ classes, onActionSuccess }: ClassListProps) {
 
                         {isExpanded && (
                             <div className="divide-y divide-gray-50">
-                                {groupedClasses[date].map((item: any, index: number) => {
+                                {groupedClasses[date].map((item: ClassSession, index: number) => {
                                     const isLoading = loadingId === (item.name + item.date);
                                     const isAvailable = item.available_spaces > 0;
 

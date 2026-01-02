@@ -4,8 +4,10 @@ import * as api from '../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, Plus, Clock, User } from 'lucide-react';
 
+import { ClassSession } from '../types';
+
 interface AutoBookingSchedulerProps {
-    staticClasses: any;
+    staticClasses: Record<string, ClassSession[]>;
     onActionSuccess: () => void;
 }
 
@@ -19,7 +21,7 @@ function AutoBookingScheduler({ staticClasses, onActionSuccess }: AutoBookingSch
         setOpenDay(openDay === day ? null : day);
     };
 
-    const handleScheduleAutoBook = async (cls: any, day: string) => {
+    const handleScheduleAutoBook = async (cls: ClassSession, day: string) => {
         console.log("handleScheduleAutoBook clicked", { cls, day });
 
         // const confirmMsg = `Enable Auto-Booking for ${cls.name} on ${day}s at ${cls.start_time}?`;
@@ -40,9 +42,10 @@ function AutoBookingScheduler({ staticClasses, onActionSuccess }: AutoBookingSch
                 queryClient.invalidateQueries({ queryKey: ['autoBookings'] });
                 onActionSuccess();
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("API Error", err);
-            alert(`Error: ${err.message}`);
+            const msg = err instanceof Error ? err.message : 'Unknown error';
+            alert(`Error: ${msg}`);
         } finally {
             setLoadingId(null);
         }
@@ -75,7 +78,7 @@ function AutoBookingScheduler({ staticClasses, onActionSuccess }: AutoBookingSch
 
                         {isOpen && (
                             <div className="divide-y divide-gray-50">
-                                {classes.map((cls: any, idx: number) => {
+                                {classes.map((cls: ClassSession, idx: number) => {
                                     const loadKey = `${day}-${cls.name}-${cls.start_time}`;
                                     const isLoading = loadingId === loadKey;
 
