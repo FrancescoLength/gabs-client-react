@@ -17,5 +17,8 @@ export default defineConfig({
         environment: 'jsdom',
         setupFiles: './src/setupTests.js',
         css: true,
+        // Limit threads in CI to prevent resource exhaustion/hanging
+        fileParallelism: !process.env.CI,
+        maxConcurrency: process.env.CI ? 1 : undefined,
     },
 });
