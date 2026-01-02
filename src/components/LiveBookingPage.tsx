@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { parse, format } from 'date-fns';
 
 // Reusing parser logic
-const parseBookingDate = (dateString, year = new Date().getFullYear()) => {
+const parseBookingDate = (dateString: string, year = new Date().getFullYear()) => {
   const cleanDateString = dateString.replace(/(\d+)(st|nd|rd|th)/, '$1');
   try {
     const date = parse(cleanDateString, 'EEEE d MMMM', new Date());
@@ -19,7 +19,7 @@ const parseBookingDate = (dateString, year = new Date().getFullYear()) => {
   } catch { return null; }
 };
 
-const parseAvailableClassDate = (dateString) => {
+const parseAvailableClassDate = (dateString: string) => {
   return parse(dateString, 'dd/MM/yyyy', new Date());
 };
 
@@ -30,14 +30,14 @@ function LiveBookingPage() {
   // 1. Fetch My Bookings
   const { data: myBookings = [], isLoading: loadingBookings, error: errorBookings, refetch: refetchBookings } = useQuery({
     queryKey: ['bookings'],
-    queryFn: () => api.getMyBookings(token),
+    queryFn: () => api.getMyBookings(token!),
     enabled: !!token,
   });
 
   // 2. Fetch Available Classes
   const { data: allClasses = [], isLoading: loadingClasses, error: errorClasses, refetch: refetchClasses } = useQuery({
     queryKey: ['classes'],
-    queryFn: () => api.getClasses(token),
+    queryFn: () => api.getClasses(token!),
     enabled: !!token,
   });
 
@@ -48,7 +48,7 @@ function LiveBookingPage() {
     if (!myBookings || !allClasses) return [];
 
     const bookedSet = new Set();
-    myBookings.forEach(b => {
+    myBookings.forEach((b: any) => {
       const dateObj = parseBookingDate(b.date);
       if (dateObj) {
         const dateStr = format(dateObj, 'yyyy-MM-dd');
@@ -56,7 +56,7 @@ function LiveBookingPage() {
       }
     });
 
-    return allClasses.filter(c => {
+    return allClasses.filter((c: any) => {
       const dateObj = parseAvailableClassDate(c.date);
       if (!dateObj) return true;
       const dateStr = format(dateObj, 'yyyy-MM-dd');
@@ -66,8 +66,8 @@ function LiveBookingPage() {
   }, [myBookings, allClasses]);
 
   const handleActionSuccess = () => {
-    queryClient.invalidateQueries(['bookings']);
-    queryClient.invalidateQueries(['classes']);
+    queryClient.invalidateQueries({ queryKey: ['bookings'] });
+    queryClient.invalidateQueries({ queryKey: ['classes'] });
   };
 
   if (error) {

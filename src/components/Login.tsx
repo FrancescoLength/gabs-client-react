@@ -7,19 +7,19 @@ import gabsLogo from '../gabs_logo.png';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const { login, isLoggedIn } = useAuth(); // Assume useAuth handles the actual API call
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
       await login(email, password);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Login API error:", err.message);
       setError("Incorrect email or password.");
     } finally {

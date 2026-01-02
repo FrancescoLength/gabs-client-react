@@ -4,17 +4,22 @@ import * as api from '../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { ChevronDown, ChevronUp, Plus, Clock, User } from 'lucide-react';
 
-function AutoBookingScheduler({ staticClasses, onActionSuccess }) {
+interface AutoBookingSchedulerProps {
+    staticClasses: any;
+    onActionSuccess: () => void;
+}
+
+function AutoBookingScheduler({ staticClasses, onActionSuccess }: AutoBookingSchedulerProps) {
     const { token } = useAuth();
     const queryClient = useQueryClient();
-    const [openDay, setOpenDay] = useState(null);
-    const [loadingId, setLoadingId] = useState(null);
+    const [openDay, setOpenDay] = useState<string | null>(null);
+    const [loadingId, setLoadingId] = useState<string | null>(null);
 
-    const toggleDay = (day) => {
+    const toggleDay = (day: string) => {
         setOpenDay(openDay === day ? null : day);
     };
 
-    const handleScheduleAutoBook = async (cls, day) => {
+    const handleScheduleAutoBook = async (cls: any, day: string) => {
         console.log("handleScheduleAutoBook clicked", { cls, day });
 
         // const confirmMsg = `Enable Auto-Booking for ${cls.name} on ${day}s at ${cls.start_time}?`;
@@ -28,12 +33,14 @@ function AutoBookingScheduler({ staticClasses, onActionSuccess }) {
 
         try {
             console.log("Calling api.scheduleAutoBook...");
-            const response = await api.scheduleAutoBook(token, cls.name, day, cls.start_time, cls.instructor);
-            console.log("API Success", response);
-            alert(response.message);
-            queryClient.invalidateQueries(['autoBookings']);
-            onActionSuccess();
-        } catch (err) {
+            if (token) {
+                const response = await api.scheduleAutoBook(token, cls.name, day, cls.start_time, cls.instructor);
+                console.log("API Success", response);
+                alert(response.message);
+                queryClient.invalidateQueries({ queryKey: ['autoBookings'] });
+                onActionSuccess();
+            }
+        } catch (err: any) {
             console.error("API Error", err);
             alert(`Error: ${err.message}`);
         } finally {
@@ -41,7 +48,7 @@ function AutoBookingScheduler({ staticClasses, onActionSuccess }) {
         }
     };
 
-    const sortedDays = Object.keys(staticClasses || {}).sort((a, b) => {
+    const sortedDays = Object.keys(staticClasses || {}).sort((a: string, b: string) => {
         const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
         return days.indexOf(a) - days.indexOf(b);
     });
@@ -52,7 +59,7 @@ function AutoBookingScheduler({ staticClasses, onActionSuccess }) {
 
     return (
         <div className="space-y-4">
-            {sortedDays.map((day) => {
+            {sortedDays.map((day: string) => {
                 const isOpen = openDay === day;
                 const classes = staticClasses[day];
 
@@ -68,7 +75,7 @@ function AutoBookingScheduler({ staticClasses, onActionSuccess }) {
 
                         {isOpen && (
                             <div className="divide-y divide-gray-50">
-                                {classes.map((cls, idx) => {
+                                {classes.map((cls: any, idx: number) => {
                                     const loadKey = `${day}-${cls.name}-${cls.start_time}`;
                                     const isLoading = loadingId === loadKey;
 

@@ -8,7 +8,17 @@ const AdminLogsPage = () => {
   const [activeTab, setActiveTab] = useState('status');
 
   // Data States
-  const [data, setData] = useState({
+  // Data States
+  interface AdminData {
+    logs: any[];
+    autoBookings: any[];
+    liveBookings: any[];
+    pushSubscriptions: any[];
+    sessions: any[];
+    status: any | null;
+  }
+
+  const [data, setData] = useState<AdminData>({
     logs: [],
     autoBookings: [],
     liveBookings: [],
@@ -18,7 +28,7 @@ const AdminLogsPage = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [logFilter, setLogFilter] = useState('ALL');
 
@@ -30,30 +40,32 @@ const AdminLogsPage = () => {
 
       switch (activeTab) {
         case 'logs': {
-          const { logs } = await api.getAdminLogs(token);
-          newData = { logs };
+          if (token) {
+            const { logs } = await api.getAdminLogs(token);
+            newData = { logs };
+          }
           break;
         }
         case 'autoBookings':
-          newData = { autoBookings: await api.getAdminAutoBookings(token) };
+          if (token) newData = { autoBookings: await api.getAdminAutoBookings(token) };
           break;
         case 'pushSubscriptions':
-          newData = { pushSubscriptions: await api.getAdminPushSubscriptions(token) };
+          if (token) newData = { pushSubscriptions: await api.getAdminPushSubscriptions(token) };
           break;
         case 'liveBookings':
-          newData = { liveBookings: await api.getAdminLiveBookings(token) };
+          if (token) newData = { liveBookings: await api.getAdminLiveBookings(token) };
           break;
         case 'sessions':
-          newData = { sessions: await api.getAdminSessions(token) };
+          if (token) newData = { sessions: await api.getAdminSessions(token) };
           break;
         case 'status':
-          newData = { status: await api.getAdminStatus(token) };
+          if (token) newData = { status: await api.getAdminStatus(token) };
           break;
         default:
           break;
       }
       setData(prev => ({ ...prev, ...newData }));
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
@@ -62,7 +74,7 @@ const AdminLogsPage = () => {
 
   useEffect(() => {
     fetchData();
-    let interval;
+    let interval: ReturnType<typeof setInterval>;
     if (autoRefresh) {
       interval = setInterval(fetchData, 5000);
     }
@@ -78,7 +90,7 @@ const AdminLogsPage = () => {
     { id: 'sessions', label: 'Sessions', icon: <Shield size={18} /> },
   ];
 
-  const getLevelColor = (level) => {
+  const getLevelColor = (level: string) => {
     switch (level) {
       case 'INFO': return 'text-blue-600 bg-blue-50';
       case 'WARNING': return 'text-orange-600 bg-orange-50';
@@ -89,7 +101,7 @@ const AdminLogsPage = () => {
   };
 
   const renderContent = () => {
-    if (loading && !data[activeTab]?.length && !data.status) {
+    if (loading && !((data as any)[activeTab]?.length) && !data.status) {
       return (
         <div className="flex flex-col items-center justify-center p-20 text-brand-muted space-y-4">
           <div className="w-10 h-10 border-4 border-brand-red-light border-t-brand-red rounded-full animate-spin"></div>
@@ -156,7 +168,7 @@ const AdminLogsPage = () => {
         ) : null;
 
       case 'logs': {
-        const filteredLogs = data.logs.filter(log => {
+        const filteredLogs = data.logs.filter((log: any) => {
           if (logFilter === 'ALL') return true;
           return log.level === logFilter;
         });
@@ -181,7 +193,7 @@ const AdminLogsPage = () => {
               ))}
             </div>
             <div className="max-h-[600px] overflow-y-auto divide-y divide-gray-100">
-              {filteredLogs.length > 0 ? filteredLogs.map((log, index) => (
+              {filteredLogs.length > 0 ? filteredLogs.map((log: any, index: number) => (
                 <div key={index} className="p-4 hover:bg-gray-50 transition-colors">
                   <div className="flex justify-between items-center mb-2">
                     <span className={`text-xs font-bold px-2 py-1 rounded-md ${getLevelColor(log.level)}`}>
@@ -213,7 +225,7 @@ const AdminLogsPage = () => {
           return [];
         };
 
-        const renderRow = (item) => {
+        const renderRow = (item: any) => {
           if (activeTab === 'autoBookings') return (
             <>
               <td className="px-6 py-4 font-mono text-xs text-gray-500">{item.id}</td>
@@ -245,21 +257,21 @@ const AdminLogsPage = () => {
               <td className="px-6 py-4 font-mono text-xs text-gray-500">{item.id}</td>
               <td className="px-6 py-4 font-medium text-gray-900">{item.username}</td>
               <td className="px-6 py-4 font-mono text-xs text-gray-500 truncate max-w-xs" title={item.endpoint}>{item.endpoint}</td>
-              <td className="px-6 py-4 text-gray-500 text-xs">{new Date(item.created_at * 1000).toLocaleString()}</td>
+              <td className="px-6 py-4 text-gray-500 text-xs">{new Date(Number(item.created_at) * 1000).toLocaleString()}</td>
             </>
           );
           if (activeTab === 'sessions') return (
             <>
               <td className="px-6 py-4 font-medium text-gray-900">{item.username}</td>
-              <td className="px-6 py-4 text-gray-500 text-xs">{new Date(item.updated_at * 1000).toLocaleString()}</td>
+              <td className="px-6 py-4 text-gray-500 text-xs">{new Date(Number(item.updated_at) * 1000).toLocaleString()}</td>
               <td className="px-6 py-4 font-mono text-xs text-gray-400 truncate max-w-md" title={JSON.stringify(item.session_data)}>{JSON.stringify(item.session_data)}</td>
             </>
           );
           // ... other cases can be handled similarly or generically
-          return <td colSpan="100" className="px-6 py-4 text-gray-500">{JSON.stringify(item)}</td>;
+          return <td colSpan={100} className="px-6 py-4 text-gray-500">{JSON.stringify(item)}</td>;
         };
 
-        const list = data[activeTab] || [];
+        const list = (data as any)[activeTab] || [];
 
         return (
           <div className="bg-white rounded-2xl shadow-float overflow-hidden border border-gray-100">
@@ -273,14 +285,14 @@ const AdminLogsPage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {list.map((item, idx) => (
+                  {list.map((item: any, idx: number) => (
                     <tr key={item.id || idx} className="hover:bg-gray-50/50 transition-colors">
                       {renderRow(item)}
                     </tr>
                   ))}
                   {list.length === 0 && (
                     <tr>
-                      <td colSpan="100" className="px-6 py-8 text-center text-gray-400 italic">No records found</td>
+                      <td colSpan={100} className="px-6 py-8 text-center text-gray-400 italic">No records found</td>
                     </tr>
                   )}
                 </tbody>

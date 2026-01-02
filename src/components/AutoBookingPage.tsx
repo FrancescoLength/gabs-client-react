@@ -12,14 +12,14 @@ function AutoBookingPage() {
   // 1. Fetch My Auto Bookings
   const { data: autoBookings = [], isLoading: loadingBookings, error: errorBookings } = useQuery({
     queryKey: ['autoBookings'],
-    queryFn: () => api.getAutoBookings(token),
+    queryFn: () => api.getAutoBookings(token!),
     enabled: !!token,
   });
 
   // 2. Fetch Static Classes (Schedule)
   const { data: staticClasses = {}, isLoading: loadingStatic, error: errorStatic } = useQuery({
     queryKey: ['staticClasses'],
-    queryFn: () => api.getStaticClasses(token),
+    queryFn: () => api.getStaticClasses(token!),
     enabled: !!token,
   });
 
@@ -27,7 +27,7 @@ function AutoBookingPage() {
   const error = errorBookings || errorStatic;
 
   const handleActionSuccess = () => {
-    queryClient.invalidateQueries(['autoBookings']);
+    queryClient.invalidateQueries({ queryKey: ['autoBookings'] });
   };
 
   if (error) {

@@ -4,10 +4,16 @@ import * as api from '../api';
 import { useQueryClient } from '@tanstack/react-query';
 import { Clock, Repeat, Trash2 } from 'lucide-react';
 
-function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }) {
+interface MyAutoBookingsProps {
+    autoBookings: any[];
+    staticClasses: any;
+    onActionSuccess: () => void;
+}
+
+function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }: MyAutoBookingsProps) {
     const { token } = useAuth();
     const queryClient = useQueryClient();
-    const [loadingId, setLoadingId] = useState(null);
+    const [loadingId, setLoadingId] = useState<number | null>(null);
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
@@ -15,15 +21,15 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }) {
         return () => clearInterval(timer);
     }, []);
 
-    const getNextOccurrence = (dayOfWeek, startTime, lastBookedDate) => {
+    const getNextOccurrence = (dayOfWeek: string, startTime: string, lastBookedDate: string) => {
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         const today = new Date();
         const targetDayIndex = daysOfWeek.indexOf(dayOfWeek);
         if (targetDayIndex === -1) return null;
 
-        let daysUntilTarget = (targetDayIndex - today.getDay() + 7) % 7;
+        const daysUntilTarget = (targetDayOfWeek - currentDayOfWeek + 7) % 7;
 
-        let nextDate = new Date(today);
+        const nextDate = new Date(today);
         nextDate.setDate(today.getDate() + daysUntilTarget);
         const [hours, minutes] = startTime.split(':').map(Number);
         nextDate.setHours(hours, minutes, 0, 0);
@@ -42,7 +48,7 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }) {
         return nextDate;
     };
 
-    const handleCancelAutoBook = async (bookingId) => {
+    const handleCancelAutoBook = async (bookingId: number) => {
         // Removed blocking confirm
         // if (!confirm('Are you sure you want to cancel this automatic booking?')) return;
 
@@ -50,12 +56,14 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }) {
 
         try {
             setLoadingId(bookingId);
-            const response = await api.cancelAutoBooking(token, bookingId);
-            console.log("Delete Auto-Booking Response:", response);
-            alert(response.message);
-            queryClient.invalidateQueries(['autoBookings']);
-            onActionSuccess();
-        } catch (err) {
+            if (token) {
+                const response = await api.cancelAutoBooking(token, bookingId);
+                console.log("Delete Auto-Booking Response:", response);
+                alert(response.message);
+                queryClient.invalidateQueries({ queryKey: ['autoBookings'] });
+                onActionSuccess();
+            }
+        } catch (err: any) {
             console.error("Delete Auto-Booking Error:", err);
             alert(err.message);
         } finally {
@@ -73,14 +81,14 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }) {
 
     return (
         <div className="space-y-4">
-            {autoBookings.map((booking) => {
+            {autoBookings.map((booking: any) => {
                 const updatedNextClassTime = getNextOccurrence(booking.day_of_week, booking.target_time, booking.last_booked_date);
                 const isLoading = loadingId === booking.id;
 
                 let displayEndTime = '';
                 if (staticClasses && booking.day_of_week && staticClasses[booking.day_of_week]) {
                     const foundClass = staticClasses[booking.day_of_week].find(
-                        c => c.name === booking.class_name && c.start_time === booking.target_time && c.instructor === booking.instructor
+                        (c: any) => c.name === booking.class_name && c.start_time === booking.target_time && c.instructor === booking.instructor
                     );
                     if (foundClass) displayEndTime = foundClass.end_time;
                 }
@@ -88,7 +96,7 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }) {
                 let statusText = null;
                 if (updatedNextClassTime) {
                     const bookingOpenTime = new Date(updatedNextClassTime.getTime() - 48 * 60 * 60 * 1000);
-                    const diff = bookingOpenTime - currentTime;
+                    const diff = bookingOpenTime.getTime() - currentTime.getTime();
 
                     if (diff > 0) {
                         const d = Math.floor(diff / (1000 * 60 * 60 * 24));

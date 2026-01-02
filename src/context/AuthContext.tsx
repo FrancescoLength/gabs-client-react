@@ -1,17 +1,34 @@
-import { createContext, useState, useContext, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useState, useContext, useEffect, useMemo, useCallback, ReactNode } from 'react';
 import * as api from '../api';
 import { jwtDecode } from 'jwt-decode';
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const AuthContext = createContext(null);
+interface AuthContextType {
+  token: string | null;
+  user: string | null;
+  isAdmin: boolean;
+  isLoggedIn: boolean;
+  login: (email: string, password: string) => Promise<any>;
+  logout: () => void;
+}
 
-export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem('authToken'));
+interface DecodedToken {
+  sub: string;
+  exp: number;
+  [key: string]: any;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const AuthContext = createContext<AuthContextType | null>(null);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [token, setToken] = useState<string | null>(localStorage.getItem('authToken'));
 
   const logout = useCallback(async () => {
     try {
-      // Perform a backend logout to clear the session from the server.
-      await api.logout(token);
+      if (token) {
+        // Perform a backend logout to clear the session from the server.
+        await api.logout(token);
+      }
     } catch (error) {
       // Log the error but proceed with client-side logout anyway,
       // as the user should be logged out of the UI regardless.
@@ -25,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   const { user, isAdmin } = useMemo(() => {
     if (!token) return { user: null, isAdmin: false };
     try {
-      const payload = jwtDecode(token);
+      const payload = jwtDecode<DecodedToken>(token);
       return {
         user: payload.sub,
         isAdmin: payload.sub === import.meta.env.VITE_ADMIN_EMAIL
@@ -59,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token, logout]);
 
-  const login = useCallback(async (email, password) => {
+  const login = useCallback(async (email: string, password: string) => {
     const data = await api.login(email, password);
     if (data.access_token) {
       setToken(data.access_token);
@@ -82,5 +99,5 @@ export const AuthProvider = ({ children }) => {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
-  return useContext(AuthContext);
+  return useContext(AuthContext) as AuthContextType;
 };
