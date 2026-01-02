@@ -25,7 +25,8 @@ describe('HomePage', () => {
         // "Gym" might be split or multiple
         const headings = screen.getAllByRole('heading');
         expect(headings.length).toBeGreaterThan(0);
-        expect(screen.getByText(/Automatic Booking System/i)).toBeInTheDocument();
+        // "Automatic Booking System" appears in main styling and redundant spans, checking for existence is enough
+        expect(screen.getAllByText(/Automatic Booking System/i)[0]).toBeInTheDocument();
 
         // Check for Open Source section
         expect(screen.getByText(/Proudly Open Source/i)).toBeInTheDocument();
