@@ -257,7 +257,9 @@ const AdminLogsPage = () => {
                 <td className="px-6 py-4 font-medium text-gray-900">{booking.username}</td>
                 <td className="px-6 py-4 text-brand-dark">{booking.class_name}</td>
                 <td className="px-6 py-4 text-gray-600">{booking.class_date}</td>
-                <td className="px-6 py-4 text-gray-600">{booking.class_time}</td>
+                <td className="px-6 py-4 text-gray-600">
+                  {booking.created_at ? booking.created_at.split(' ')[1] : booking.class_time}
+                </td>
                 <td className="px-6 py-4 text-gray-500">{booking.reminder_sent ? '✅' : '⏳'}</td>
                 <td className="px-6 py-4 font-mono text-xs text-gray-400">{booking.auto_booking_id || '-'}</td>
               </>
