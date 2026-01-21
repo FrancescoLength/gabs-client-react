@@ -181,13 +181,13 @@ const AdminLogsPage = () => {
         return (
           <div className="bg-white rounded-2xl shadow-float overflow-hidden border border-gray-100">
             <div className="p-4 border-b border-gray-100 flex items-center space-x-2 bg-gray-50/50 overflow-x-auto no-scrollbar">
-              <span className="text-xs font-semibold text-gray-500 uppercase mr-2 whitespace-nowrap flex-shrink-0">Filter:</span>
+              <span className="text-xs font-semibold text-gray-500 uppercase mr-2 whitespace-nowrap flex-shrink-0"> </span>
               {['ALL', 'INFO', 'WARNING', 'ERROR'].map(level => (
                 <button
                   key={level}
                   onClick={() => setLogFilter(level)}
                   className={`
-                           px-3 py-1 rounded-lg text-xs font-bold transition-all
+                           px-3 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0
                            ${logFilter === level
                       ? (level === 'ERROR' ? 'bg-red-100 text-red-700' : level === 'WARNING' ? 'bg-orange-100 text-orange-700' : 'bg-brand-dark text-white')
                       : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'}
