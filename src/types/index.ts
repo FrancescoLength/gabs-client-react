@@ -81,6 +81,7 @@ export interface LiveBooking {
     class_time: string;
     reminder_sent: boolean;
     auto_booking_id?: number;
+    created_at?: string;
 }
 
 export interface PushSubscriptionRecord {
