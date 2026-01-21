@@ -180,8 +180,8 @@ const AdminLogsPage = () => {
 
         return (
           <div className="bg-white rounded-2xl shadow-float overflow-hidden border border-gray-100">
-            <div className="p-4 border-b border-gray-100 flex items-center space-x-2 bg-gray-50/50">
-              <span className="text-xs font-semibold text-gray-500 uppercase mr-2">Filter:</span>
+            <div className="p-4 border-b border-gray-100 flex items-center space-x-2 bg-gray-50/50 overflow-x-auto no-scrollbar">
+              <span className="text-xs font-semibold text-gray-500 uppercase mr-2 whitespace-nowrap flex-shrink-0">Filter:</span>
               {['ALL', 'INFO', 'WARNING', 'ERROR'].map(level => (
                 <button
                   key={level}
