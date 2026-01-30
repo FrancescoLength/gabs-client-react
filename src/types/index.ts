@@ -37,6 +37,7 @@ export interface AutoBooking {
     instructor?: string;
     status: string; // "pending", etc.
     last_booked_date?: string;
+    retry_count?: number;
 }
 
 
