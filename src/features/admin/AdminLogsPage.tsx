@@ -8,7 +8,7 @@ import { Shield, Activity, List, Clock, Bell, Database, RefreshCw, Terminal, Ser
 const AdminLogsPage = () => {
   const { token } = useAuth();
   const [activeTab, setActiveTab] = useState('status');
-
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
 
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [logFilter, setLogFilter] = useState('ALL');
@@ -101,8 +101,66 @@ const AdminLogsPage = () => {
     }
   };
 
+  // Helper functions
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatDateTime = (timestamp: number) => {
+    try {
+      const date = new Date(timestamp * 1000);
+      return new Intl.DateTimeFormat('en-GB', { 
+        day: '2-digit', month: '2-digit', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      }).format(date);
+    } catch {
+      return String(timestamp);
+    }
+  };
+
+  const formatLogDate = (timestamp: string) => {
+      // Backend format is typically "2025-11-25 00:00:01,289" (ISO-like but with comma and space)
+      // Input: "yyyy-MM-dd HH:mm:ss,SSS"
+      // Output: "dd/MM/yyyy HH:mm:ss,SSS"
+      try {
+          const [datePart, timePart] = timestamp.split(' ');
+          const [year, month, day] = datePart.split('-');
+          return `${day}/${month}/${year} ${timePart}`;
+      } catch {
+          return timestamp;
+      }
+  };
+
+  const getBookingDay = (day: string) => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const idx = days.indexOf(day);
+    if (idx === -1) return '-';
+    // Subtract 2 days, handling wrap-around
+    const bookingDayIdx = (idx - 2 + 7) % 7;
+    return days[bookingDayIdx];
+  };
+
+  const getLastSessionUpdate = () => {
+      if (!sessions || sessions.length === 0) return null;
+      const timestamps = sessions.map(s => s.updated_at);
+      const maxTime = Math.max(...timestamps);
+      return formatDateTime(maxTime);
+  };
+
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
   const renderContent = () => {
-    // Dynamically check length if it's an array
     const currentData = data[activeTab as keyof AdminData];
     const hasData = Array.isArray(currentData) ? currentData.length > 0 : !!data.status;
 
@@ -151,6 +209,10 @@ const AdminLogsPage = () => {
                 <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                   <span className="font-medium text-gray-600">Uptime</span>
                   <span className="font-mono text-gray-800 font-bold">{data.status.uptime}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="font-medium text-gray-600">Last Session Update</span>
+                  <span className="font-mono text-gray-800 font-bold">{getLastSessionUpdate() || 'N/A'}</span>
                 </div>
               </div>
             </div>
@@ -204,7 +266,7 @@ const AdminLogsPage = () => {
                     <span className={`text-xs font-bold px-2 py-1 rounded-md ${getLevelColor(log.level)}`}>
                       {log.level}
                     </span>
-                    <span className="text-xs text-gray-400 font-mono">{log.timestamp}</span>
+                    <span className="text-xs text-gray-400 font-mono">{formatLogDate(log.timestamp)}</span>
                   </div>
                   <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono break-all pl-2 border-l-2 border-gray-200">
                     {log.message}
@@ -223,11 +285,37 @@ const AdminLogsPage = () => {
       case 'pushSubscriptions':
       case 'sessions': {
         const getColumns = () => {
-          if (activeTab === 'autoBookings') return ['ID', 'User', 'Class', 'Time', 'Day', 'Status', 'Attempts'];
-          if (activeTab === 'liveBookings') return ['ID', 'User', 'Class', 'Date', 'Time', 'Reminder', 'AutoID'];
-          if (activeTab === 'pushSubscriptions') return ['ID', 'User', 'Endpoint', 'Created'];
-          if (activeTab === 'sessions') return ['User', 'Updated', 'Session Data'];
-          return [];
+            if (activeTab === 'autoBookings') return [
+                { label: 'ID', key: 'id' },
+                { label: 'User', key: 'username' },
+                { label: 'Class', key: 'class_name' },
+                { label: 'Time', key: 'target_time' },
+                { label: 'Day', key: 'day_of_week' },
+                { label: 'Booking Day', key: 'booking_day' }, // Computed
+                { label: 'Status', key: 'status' },
+                { label: 'Attempts', key: 'retry_count' }
+            ];
+            if (activeTab === 'liveBookings') return [
+                { label: 'ID', key: 'id' },
+                { label: 'User', key: 'username' },
+                { label: 'Class', key: 'class_name' },
+                { label: 'Date', key: 'class_date' },
+                { label: 'Time', key: 'class_time' },
+                { label: 'Reminder', key: 'reminder_sent' },
+                { label: 'AutoID', key: 'auto_booking_id' }
+            ];
+            if (activeTab === 'pushSubscriptions') return [
+                { label: 'ID', key: 'id' },
+                { label: 'User', key: 'username' },
+                { label: 'Endpoint', key: 'endpoint' },
+                { label: 'Created', key: 'created_at' }
+            ];
+            if (activeTab === 'sessions') return [
+                { label: 'User', key: 'username' },
+                { label: 'Updated', key: 'updated_at' },
+                { label: 'Session Data', key: 'session_data' }
+            ];
+            return [];
         };
 
         const renderRow = (item: unknown) => {
@@ -240,6 +328,7 @@ const AdminLogsPage = () => {
                 <td className="px-6 py-4 text-brand-dark">{booking.class_name}</td>
                 <td className="px-6 py-4 text-gray-600">{booking.target_time}</td>
                 <td className="px-6 py-4"><span className="px-2 py-1 bg-brand-red-light/20 text-brand-red text-xs font-bold rounded-md">{booking.day_of_week}</span></td>
+                <td className="px-6 py-4 text-gray-500 text-xs">{getBookingDay(booking.day_of_week)}</td>
                 <td className="px-6 py-4">
                   <span className={`px-2 py-1 rounded-full text-xs font-bold ${booking.status === 'pending' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                     {booking.status}
@@ -258,7 +347,7 @@ const AdminLogsPage = () => {
                 <td className="px-6 py-4 font-mono text-xs text-gray-500">{booking.id}</td>
                 <td className="px-6 py-4 font-medium text-gray-900">{booking.username}</td>
                 <td className="px-6 py-4 text-brand-dark">{booking.class_name}</td>
-                <td className="px-6 py-4 text-gray-600">{booking.class_date}</td>
+                <td className="px-6 py-4 text-gray-600">{formatDate(booking.class_date)}</td>
                 <td className="px-6 py-4 text-gray-600">
                   {booking.created_at ? booking.created_at.split(' ')[1] : booking.class_time}
                 </td>
@@ -274,7 +363,7 @@ const AdminLogsPage = () => {
                 <td className="px-6 py-4 font-mono text-xs text-gray-500">{sub.id}</td>
                 <td className="px-6 py-4 font-medium text-gray-900">{sub.username}</td>
                 <td className="px-6 py-4 font-mono text-xs text-gray-500 truncate max-w-xs" title={sub.endpoint}>{sub.endpoint}</td>
-                <td className="px-6 py-4 text-gray-500 text-xs">{new Date(Number(sub.created_at) * 1000).toLocaleString()}</td>
+                <td className="px-6 py-4 text-gray-500 text-xs">{formatDateTime(sub.created_at)}</td>
               </>
             );
           }
@@ -283,7 +372,7 @@ const AdminLogsPage = () => {
             return (
               <>
                 <td className="px-6 py-4 font-medium text-gray-900">{session.username}</td>
-                <td className="px-6 py-4 text-gray-500 text-xs">{new Date(Number(session.updated_at) * 1000).toLocaleString()}</td>
+                <td className="px-6 py-4 text-gray-500 text-xs">{formatDateTime(session.updated_at)}</td>
                 <td className="px-6 py-4 font-mono text-xs text-gray-400 truncate max-w-md" title={JSON.stringify(session.session_data)}>{JSON.stringify(session.session_data)}</td>
               </>
             );
@@ -292,11 +381,29 @@ const AdminLogsPage = () => {
           return <td colSpan={100} className="px-6 py-4 text-gray-500">{JSON.stringify(item)}</td>;
         };
 
-        let list: unknown[] = [];
+        let list: any[] = [];
         if (activeTab === 'autoBookings') list = data.autoBookings;
         else if (activeTab === 'liveBookings') list = data.liveBookings;
         else if (activeTab === 'pushSubscriptions') list = data.pushSubscriptions;
         else if (activeTab === 'sessions') list = data.sessions;
+
+        // Sorting
+        if (sortConfig !== null) {
+          list = [...list].sort((a, b) => {
+            let valA = a[sortConfig.key];
+            let valB = b[sortConfig.key];
+
+            // Special handling for computed columns
+            if (activeTab === 'autoBookings' && sortConfig.key === 'booking_day') {
+                valA = getBookingDay(a.day_of_week);
+                valB = getBookingDay(b.day_of_week);
+            }
+
+            if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+            if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+            return 0;
+          });
+        }
 
         return (
           <div className="bg-white rounded-2xl shadow-float overflow-hidden border border-gray-100">
@@ -304,8 +411,23 @@ const AdminLogsPage = () => {
               <table className="w-full text-sm text-left">
                 <thead className="bg-gray-50 text-gray-500 font-semibold uppercase tracking-wider text-xs border-b border-gray-100">
                   <tr>
-                    {getColumns().map(header => (
-                      <th key={header} className="px-6 py-3 whitespace-nowrap">{header}</th>
+                    {getColumns().map(col => (
+                      <th 
+                        key={col.key} 
+                        className="px-6 py-3 whitespace-nowrap cursor-pointer hover:bg-gray-100 transition-colors select-none"
+                        onClick={() => handleSort(col.key)}
+                      >
+                        <div className="flex items-center">
+                            {col.label}
+                            <span className="ml-1">
+                                {sortConfig?.key === col.key ? (
+                                    sortConfig.direction === 'asc' ? '↑' : '↓'
+                                ) : (
+                                    <span className="text-gray-300">↕</span>
+                                )}
+                            </span>
+                        </div>
+                      </th>
                     ))}
                   </tr>
                 </thead>
