@@ -245,7 +245,9 @@ const AdminLogsPage = () => {
                     {booking.status}
                   </span>
                 </td>
-                {/* AutoBooking interface needs to match actual data. If data has username/retry_count, interface needs update */}
+                <td className="px-6 py-4 font-mono text-xs text-gray-500 text-center">
+                    {booking.retry_count || 0}
+                </td>
               </>
             );
           }
