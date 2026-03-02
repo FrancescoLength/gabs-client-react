@@ -1,8 +1,8 @@
 # GABS Client React Application
-
+## This is the modern **Frontend React** application for the **Gym Automatic Booking System (GABS)**. Looking for the backend project? You can find the GABS API Server [here](https://github.com/FrancescoLength/gabs-api-server)!
 ![GABS Banner](https://github.com/user-attachments/assets/d701a678-3fb2-4e8c-9a28-fc95fad03382)
 
-This is the modern **Frontend React** application for the **Gym Automatic Booking System (GABS)**. It interacts with the GABS API to automate gym class bookings, track live availability, and manage user schedules. 
+GABS Client React interacts with the GABS API to automate gym class bookings, track live availability, and manage user schedules. 
 
 The project has been recently refactored to use **TypeScript**, **Vite**, **Tailwind CSS**, and a **Feature-Based Architecture**.
 
