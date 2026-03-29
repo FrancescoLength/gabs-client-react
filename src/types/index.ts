@@ -66,6 +66,12 @@ export interface LogEntry {
     level: string;
     message: string;
     timestamp: string;
+    task_id?: string;
+    scenario?: string;
+    user?: string;
+    class_name?: string;
+    date?: string;
+    time?: string;
 }
 
 export interface SystemStatus {

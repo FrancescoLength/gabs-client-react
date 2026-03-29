@@ -91,16 +91,6 @@ const AdminLogsPage = () => {
     { id: 'sessions', label: 'Sessions', icon: <Shield size={18} /> },
   ];
 
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'INFO': return 'text-blue-600 bg-blue-50';
-      case 'WARNING': return 'text-orange-600 bg-orange-50';
-      case 'ERROR':
-      case 'CRITICAL': return 'text-red-600 bg-red-50 font-bold';
-      default: return 'text-gray-600 bg-gray-50';
-    }
-  };
-
   // Helper functions
   const formatDate = (dateString: string) => {
     try {
@@ -121,19 +111,6 @@ const AdminLogsPage = () => {
     } catch {
       return String(timestamp);
     }
-  };
-
-  const formatLogDate = (timestamp: string) => {
-      // Backend format is typically "2025-11-25 00:00:01,289" (ISO-like but with comma and space)
-      // Input: "yyyy-MM-dd HH:mm:ss,SSS"
-      // Output: "dd/MM/yyyy HH:mm:ss,SSS"
-      try {
-          const [datePart, timePart] = timestamp.split(' ');
-          const [year, month, day] = datePart.split('-');
-          return `${day}/${month}/${year} ${timePart}`;
-      } catch {
-          return timestamp;
-      }
   };
 
   const getBookingDay = (day: string) => {
@@ -235,46 +212,158 @@ const AdminLogsPage = () => {
         ) : null;
 
       case 'logs': {
-        const filteredLogs = data.logs.filter((log: LogEntry) => {
-          if (logFilter === 'ALL') return true;
-          return log.level === logFilter;
+        // Group logs by task_id if they have one
+        const groupedLogs: Record<string, LogEntry[]> = {};
+        const flatLogs: LogEntry[] = []; // Logs without task_id
+
+        data.logs.forEach(log => {
+          if (log.task_id) {
+            if (!groupedLogs[log.task_id]) {
+              groupedLogs[log.task_id] = [];
+            }
+            groupedLogs[log.task_id].push(log);
+          } else {
+            flatLogs.push(log);
+          }
         });
+
+        const filteredGroups = Object.entries(groupedLogs).filter(([, groupLogs]) => {
+            const matchLevel = logFilter === 'ALL' || groupLogs.some(l => l.level === logFilter);
+            return matchLevel;
+        });
+
+        const filteredFlatLogs = flatLogs.filter(log => {
+            return logFilter === 'ALL' || log.level === logFilter;
+        });
+
+        const getScenarioColor = (scenario: string = '') => {
+            switch(scenario) {
+                case 'login': case 'logout': return 'bg-blue-100 text-blue-700 border-blue-200';
+                case 'manual_booking': return 'bg-green-100 text-green-700 border-green-200';
+                case 'manual_cancel': return 'bg-red-100 text-red-700 border-red-200';
+                case 'auto_booking': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+                case 'cancellation_reminder': return 'bg-purple-100 text-purple-700 border-purple-200';
+                case 'reset_failed': return 'bg-orange-100 text-orange-700 border-orange-200';
+                case 'session_refresh': return 'bg-teal-100 text-teal-700 border-teal-200';
+                default: return 'bg-gray-100 text-gray-700 border-gray-200';
+            }
+        };
 
         return (
           <div className="bg-white rounded-2xl shadow-float overflow-hidden border border-gray-100">
-            <div className="p-4 border-b border-gray-100 flex items-center space-x-2 bg-gray-50/50 overflow-x-auto no-scrollbar">
-              <span className="text-xs font-semibold text-gray-500 uppercase mr-2 whitespace-nowrap flex-shrink-0"> </span>
-              {['ALL', 'INFO', 'WARNING', 'ERROR'].map(level => (
-                <button
-                  key={level}
-                  onClick={() => setLogFilter(level)}
-                  className={`
-                           px-3 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0
-                           ${logFilter === level
-                      ? (level === 'ERROR' ? 'bg-red-100 text-red-700' : level === 'WARNING' ? 'bg-orange-100 text-orange-700' : 'bg-brand-dark text-white')
-                      : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'}
-                        `}
-                >
-                  {level}
-                </button>
-              ))}
+            <div className="p-4 border-b border-gray-100 flex flex-col space-y-3 bg-gray-50/50">
+               <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar">
+                <span className="text-xs font-semibold text-gray-500 uppercase mr-2 whitespace-nowrap flex-shrink-0">Level</span>
+                {['ALL', 'INFO', 'WARNING', 'ERROR'].map(level => (
+                    <button
+                    key={level}
+                    onClick={() => setLogFilter(level)}
+                    className={`
+                            px-3 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex-shrink-0
+                            ${logFilter === level
+                        ? (level === 'ERROR' ? 'bg-red-100 text-red-700' : level === 'WARNING' ? 'bg-orange-100 text-orange-700' : 'bg-brand-dark text-white')
+                        : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'}
+                            `}
+                    >
+                    {level}
+                    </button>
+                ))}
+              </div>
             </div>
-            <div className="max-h-[600px] overflow-y-auto divide-y divide-gray-100">
-              {filteredLogs.length > 0 ? filteredLogs.map((log: LogEntry, index: number) => (
-                <div key={index} className="p-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className={`text-xs font-bold px-2 py-1 rounded-md ${getLevelColor(log.level)}`}>
-                      {log.level}
-                    </span>
-                    <span className="text-xs text-gray-400 font-mono">{formatLogDate(log.timestamp)}</span>
-                  </div>
-                  <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono break-all pl-2 border-l-2 border-gray-200">
-                    {log.message}
-                  </pre>
-                </div>
-              )) : (
-                <div className="p-8 text-center text-gray-400 italic">No logs found for this filter</div>
+
+            <div className="max-h-[600px] overflow-y-auto p-4 space-y-6">
+              {filteredGroups.length === 0 && filteredFlatLogs.length === 0 && (
+                 <div className="p-8 text-center text-gray-400 italic">No logs found for this filter</div>
               )}
+
+              {/* Render Structured Task Groups */}
+              {filteredGroups.map(([taskId, groupLogs]) => {
+                  const ctx = groupLogs[0]; // Take context from first log
+                  const startTime = new Date(groupLogs[0].timestamp.replace(',', '.'));
+                  const endTime = new Date(groupLogs[groupLogs.length - 1].timestamp.replace(',', '.'));
+                  const durationMs = Object.is(endTime.getTime(), NaN) || Object.is(startTime.getTime(), NaN) ? 0 : endTime.getTime() - startTime.getTime();
+                  const durationStr = durationMs > 0 ? `${(durationMs / 1000).toFixed(1)}s` : '';
+
+                  const hasError = groupLogs.some(l => l.level === 'ERROR' || l.level === 'CRITICAL');
+                  const hasWarning = groupLogs.some(l => l.level === 'WARNING');
+                  const borderClass = hasError ? 'border-red-200' : hasWarning ? 'border-orange-200' : 'border-gray-200';
+
+                  return (
+                      <div key={taskId} className={`rounded-xl border ${borderClass} bg-white shadow-sm overflow-hidden`}>
+                          {/* Group Header */}
+                          <div className={`p-3 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3 ${hasError ? 'bg-red-50/50' : 'bg-gray-50'}`}>
+                              <div className="flex items-center gap-3 flex-wrap">
+                                  <span className={`text-xs font-bold px-2 py-1 rounded-md border uppercase tracking-wider ${getScenarioColor(ctx.scenario)}`}>
+                                      {ctx.scenario || 'UNKNOWN'}
+                                  </span>
+                                  <span className="text-xs font-mono text-gray-400 bg-white px-2 py-0.5 rounded border border-gray-100">
+                                      {taskId}
+                                  </span>
+                                  {ctx.user && <span className="text-sm font-semibold text-gray-700">{ctx.user}</span>}
+                                  {ctx.class_name && (
+                                      <span className="text-sm text-gray-600 flex items-center">
+                                          <span className="mx-2 text-gray-300">•</span>
+                                          <span className="font-medium text-brand-dark">{ctx.class_name}</span>
+                                          {ctx.date && ctx.time && (
+                                            <span className="ml-1 text-gray-500">
+                                              @ {ctx.time} {ctx.date.split('-').reverse().join('/')}
+                                            </span>
+                                          )}
+                                      </span>
+                                  )}
+                              </div>
+                              {durationStr && <span className="text-xs font-mono text-gray-400">{durationStr}</span>}
+                          </div>
+
+                          {/* Log Lines */}
+                          <div className="p-3 bg-gray-900 font-mono text-sm leading-relaxed overflow-x-auto">
+                              {groupLogs.map((log, idx) => {
+                                  let colorClass = 'text-gray-300';
+                                  if (log.level === 'ERROR' || log.level === 'CRITICAL') colorClass = 'text-red-400 font-bold';
+                                  else if (log.level === 'WARNING') colorClass = 'text-yellow-400';
+                                  else if (log.message.includes('SUCCESS') || log.message.includes('✅')) colorClass = 'text-green-400 font-bold';
+
+                                  const timeOnly = log.timestamp.split(' ')[1] || '';
+                                  return (
+                                      <div key={idx} className={`${colorClass} whitespace-pre-wrap flex gap-3 hover:bg-white/5 px-2 rounded`}>
+                                          <span className="text-gray-500 flex-shrink-0 select-none">{timeOnly.split(',')[0]}</span>
+                                          <span className={`flex-shrink-0 w-12 select-none ${log.level === 'INFO' ? 'text-blue-400' : ''}`}>{log.level}</span>
+                                          <span className="break-all">{log.message}</span>
+                                      </div>
+                                  );
+                              })}
+                          </div>
+                      </div>
+                  );
+              })}
+
+              {/* Render Flat Legacy Logs (if any match the filter) */}
+              {filteredFlatLogs.length > 0 && (
+                  <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+                      <div className="p-3 border-b border-gray-100 bg-gray-50 flex items-center gap-3">
+                          <span className="text-xs font-bold px-2 py-1 rounded-md border uppercase tracking-wider bg-gray-200 text-gray-600 border-gray-300">
+                              LEGACY LOGS
+                          </span>
+                      </div>
+                      <div className="p-3 bg-gray-900 font-mono text-sm leading-relaxed overflow-x-auto">
+                          {filteredFlatLogs.map((log, idx) => {
+                               let colorClass = 'text-gray-300';
+                               if (log.level === 'ERROR' || log.level === 'CRITICAL') colorClass = 'text-red-400 font-bold';
+                               else if (log.level === 'WARNING') colorClass = 'text-yellow-400';
+                               const timeOnly = log.timestamp ? log.timestamp.split(' ')[1] : '';
+                               
+                               return (
+                                  <div key={`flat-${idx}`} className={`${colorClass} whitespace-pre-wrap flex gap-3 hover:bg-white/5 px-2 rounded`}>
+                                      {timeOnly && <span className="text-gray-500 flex-shrink-0 select-none">{timeOnly.split(',')[0]}</span>}
+                                      {log.level !== 'RAW' && <span className={`flex-shrink-0 w-12 select-none ${log.level === 'INFO' ? 'text-blue-400' : ''}`}>{log.level}</span>}
+                                      <span className="break-all">{log.message}</span>
+                                  </div>
+                              );
+                          })}
+                      </div>
+                  </div>
+              )}
+
             </div>
           </div>
         );
