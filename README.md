@@ -113,5 +113,9 @@ The application is automatically deployed to Vercel.
 -   **Routing**: `vercel.json` handles SPA routing (redirects all requests to `index.html`).
 -   **Proxy**: The Vercel deployment connects to your backend via the API URL configured in Vercel's Environment Variables.
 
+### Backend Hosting
+
+The GABS API backend runs on-premise (originally on a Raspberry Pi, now on an Android phone via Termux) and is exposed to the internet through an [ngrok](https://ngrok.com/) tunnel with a stable free domain. The `VITE_API_URL` environment variable points to this ngrok URL. The `api.ts` client includes an `ngrok-skip-browser-warning` header to bypass the ngrok interstitial page. No changes to the frontend were needed when migrating the backend from Raspberry Pi to Termux — only the backend deployment environment changed.
+
 ## 📄 License
 This project is licensed under the [GNU General Public License v3.0](LICENSE).
