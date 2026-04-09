@@ -312,7 +312,14 @@ const AdminLogsPage = () => {
                                       </span>
                                   )}
                               </div>
-                              {durationStr && <span className="text-xs font-mono text-gray-400">{durationStr}</span>}
+                              <div className="flex items-center gap-3">
+                                  {groupLogs[0].timestamp && (
+                                    <span className="text-xs font-mono text-gray-400">
+                                      {groupLogs[0].timestamp.split(' ')[0]?.split('-').reverse().join('/')}
+                                    </span>
+                                  )}
+                                  {durationStr && <span className="text-xs font-mono text-gray-400">{durationStr}</span>}
+                              </div>
                           </div>
 
                           {/* Log Lines */}
@@ -323,10 +330,13 @@ const AdminLogsPage = () => {
                                   else if (log.level === 'WARNING') colorClass = 'text-yellow-400';
                                   else if (log.message.includes('SUCCESS') || log.message.includes('✅')) colorClass = 'text-green-400 font-bold';
 
-                                  const timeOnly = log.timestamp.split(' ')[1] || '';
+                                  const [datePart = '', timePart = ''] = log.timestamp.split(' ');
+                                  const timeDisplay = timePart.split(',')[0];
+                                  const dateDisplay = datePart.split('-').reverse().join('/');
                                   return (
                                       <div key={idx} className={`${colorClass} whitespace-pre-wrap flex gap-3 hover:bg-white/5 px-2 rounded`}>
-                                          <span className="text-gray-500 flex-shrink-0 select-none">{timeOnly.split(',')[0]}</span>
+                                          <span className="text-gray-600 flex-shrink-0 select-none">{dateDisplay}</span>
+                                          <span className="text-gray-500 flex-shrink-0 select-none">{timeDisplay}</span>
                                           <span className={`flex-shrink-0 w-12 select-none ${log.level === 'INFO' ? 'text-blue-400' : ''}`}>{log.level}</span>
                                           <span className="break-all">{log.message}</span>
                                       </div>
@@ -350,11 +360,14 @@ const AdminLogsPage = () => {
                                let colorClass = 'text-gray-300';
                                if (log.level === 'ERROR' || log.level === 'CRITICAL') colorClass = 'text-red-400 font-bold';
                                else if (log.level === 'WARNING') colorClass = 'text-yellow-400';
-                               const timeOnly = log.timestamp ? log.timestamp.split(' ')[1] : '';
-                               
+                               const [datePart = '', timePart = ''] = log.timestamp ? log.timestamp.split(' ') : ['', ''];
+                               const timeDisplay = timePart.split(',')[0];
+                               const dateDisplay = datePart ? datePart.split('-').reverse().join('/') : '';
+
                                return (
                                   <div key={`flat-${idx}`} className={`${colorClass} whitespace-pre-wrap flex gap-3 hover:bg-white/5 px-2 rounded`}>
-                                      {timeOnly && <span className="text-gray-500 flex-shrink-0 select-none">{timeOnly.split(',')[0]}</span>}
+                                      {dateDisplay && <span className="text-gray-600 flex-shrink-0 select-none">{dateDisplay}</span>}
+                                      {timeDisplay && <span className="text-gray-500 flex-shrink-0 select-none">{timeDisplay}</span>}
                                       {log.level !== 'RAW' && <span className={`flex-shrink-0 w-12 select-none ${log.level === 'INFO' ? 'text-blue-400' : ''}`}>{log.level}</span>}
                                       <span className="break-all">{log.message}</span>
                                   </div>
