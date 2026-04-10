@@ -137,7 +137,7 @@ function MyAutoBookings({ autoBookings, staticClasses, onActionSuccess }: MyAuto
                             )}
                         </div>
 
-                        {booking.status === 'pending' && (
+                        {(booking.status === 'pending' || booking.status === 'failed') && (
                             <button
                                 className="w-full flex items-center justify-center px-4 py-2.5 border border-red-100 shadow-sm text-sm font-bold rounded-xl text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 transition-colors disabled:opacity-50"
                                 onClick={() => handleCancelAutoBook(booking.id)}
