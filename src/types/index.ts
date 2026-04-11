@@ -78,7 +78,9 @@ export interface SystemStatus {
     status: string;
     uptime: string;
     ssh_tunnel_command?: string;
+    tcp_tunnel_active?: boolean;
 }
+
 
 export interface LiveBooking {
     id: number;

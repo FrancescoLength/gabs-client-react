@@ -207,3 +207,13 @@ export const getAdminSessions = (): Promise<SessionRecord[]> => {
 export const getAdminStatus = (): Promise<SystemStatus> => {
   return fetchWithAuth<SystemStatus>('/admin/status');
 };
+
+export const getNgrokTcpStatus = (): Promise<{ active: boolean }> => {
+  return fetchWithAuth<{ active: boolean }>('/admin/ngrok/tcp-status');
+};
+
+export const toggleNgrokTcp = (): Promise<{ active: boolean; message: string }> => {
+  return fetchWithAuth<{ active: boolean; message: string }>('/admin/ngrok/tcp-toggle', {
+    method: 'POST',
+  });
+};
