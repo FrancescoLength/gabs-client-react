@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
 import * as api from '../../api';
 import { LogEntry, AutoBooking, LiveBooking, PushSubscriptionRecord, SessionRecord, SystemStatus } from '../../types';
-import { Shield, Activity, List, Clock, Bell, Database, RefreshCw, Terminal, Server, AlertCircle } from 'lucide-react';
+import { Shield, Activity, List, Clock, Bell, Database, RefreshCw, Terminal, Server, AlertCircle, Power } from 'lucide-react';
 
 const AdminLogsPage = () => {
   const { token } = useAuth();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('status');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
 
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [logFilter, setLogFilter] = useState('ALL');
+  const [tcpToggling, setTcpToggling] = useState(false);
 
   interface AdminData {
     logs: LogEntry[];
@@ -64,6 +66,26 @@ const AdminLogsPage = () => {
     enabled: activeTab === 'status' && !!token,
     refetchInterval: autoRefresh ? 5000 : false
   });
+
+  const { data: tcpStatus, isLoading: loadingTcp } = useQuery({
+    queryKey: ['ngrokTcpStatus'],
+    queryFn: () => api.getNgrokTcpStatus(),
+    enabled: activeTab === 'status' && !!token,
+    refetchInterval: autoRefresh ? 5000 : false
+  });
+
+  const handleTcpToggle = async () => {
+    setTcpToggling(true);
+    try {
+      await api.toggleNgrokTcp();
+      await queryClient.invalidateQueries({ queryKey: ['ngrokTcpStatus'] });
+      await queryClient.invalidateQueries({ queryKey: ['adminStatus'] });
+    } catch (e) {
+      console.error('Failed to toggle ngrok TCP tunnel:', e);
+    } finally {
+      setTcpToggling(false);
+    }
+  };
 
   // Consolidated loading / error handling
   const loading = loadingLogs || loadingAuto || loadingLive || loadingPush || loadingSessions || loadingStatus;
@@ -190,6 +212,30 @@ const AdminLogsPage = () => {
                 <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                   <span className="font-medium text-gray-600">Last Session Update</span>
                   <span className="font-mono text-gray-800 font-bold">{getLastSessionUpdate() || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="font-medium text-gray-600 flex items-center gap-2">
+                    <Power size={14} />
+                    SSH Tunnel (TCP)
+                  </span>
+                  <button
+                    onClick={handleTcpToggle}
+                    disabled={tcpToggling || loadingTcp}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-bold transition-all ${
+                      tcpToggling || loadingTcp
+                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        : tcpStatus?.active
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200 shadow-sm'
+                        : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
+                    }`}
+                  >
+                    {tcpToggling || loadingTcp ? (
+                      <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Power size={13} />
+                    )}
+                    {tcpStatus?.active ? 'ON' : 'OFF'}
+                  </button>
                 </div>
               </div>
             </div>

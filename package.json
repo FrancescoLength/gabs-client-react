@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "type": "module",
   "private": true,
-  "proxy": "http://192.168.1.108:5000",
+  "proxy": "http://192.168.1.103:5000",
   "dependencies": {
     "@tanstack/react-query": "^5.90.15",
     "@testing-library/dom": "^10.4.1",
