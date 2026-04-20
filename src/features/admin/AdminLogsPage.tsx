@@ -376,14 +376,14 @@ const AdminLogsPage = () => {
                                   else if (log.level === 'WARNING') colorClass = 'text-yellow-400';
                                   else if (log.message.includes('SUCCESS') || log.message.includes('✅')) colorClass = 'text-green-400 font-bold';
 
-                                  const [datePart = '', timePart = ''] = log.timestamp.split(' ');
+                                  const [, timePart = ''] = log.timestamp.split(' ');
                                   const timeDisplay = timePart.split(',')[0];
-                                  const dateDisplay = datePart.split('-').reverse().join('/');
                                   return (
-                                      <div key={idx} className={`${colorClass} whitespace-pre-wrap flex gap-3 hover:bg-white/5 px-2 rounded`}>
-                                          <span className="text-gray-600 flex-shrink-0 select-none">{dateDisplay}</span>
-                                          <span className="text-gray-500 flex-shrink-0 select-none">{timeDisplay}</span>
-                                          <span className={`flex-shrink-0 w-12 select-none ${log.level === 'INFO' ? 'text-blue-400' : ''}`}>{log.level}</span>
+                                      <div key={idx} className={`${colorClass} whitespace-pre-wrap flex flex-col md:flex-row md:gap-3 hover:bg-white/5 px-2 rounded`}>
+                                          <div className="flex gap-3 md:contents">
+                                              <span className="text-gray-500 flex-shrink-0 select-none">{timeDisplay}</span>
+                                              <span className={`flex-shrink-0 w-12 select-none ${log.level === 'INFO' ? 'text-blue-400' : ''}`}>{log.level}</span>
+                                          </div>
                                           <span className="break-all">{log.message}</span>
                                       </div>
                                   );
