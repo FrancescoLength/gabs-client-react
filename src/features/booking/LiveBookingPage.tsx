@@ -46,21 +46,6 @@ function LiveBookingPage() {
     });
 
     return allClasses.filter((c: ClassSession) => {
-      // Assuming 'date' property exists on ClassSession for this filtering logic 
-      // but checking the interface, ClassSession only has start_time/end_time/name/instructor?
-      // Wait, api.ts getClasses returns ClassSession[]. 
-      // Let's check api.ts/types. 
-      // The current types match what was in api.ts previously. 
-      // But the logic here uses `c.date`. 
-      // If `c.date` is missing from ClassSession, this will error.
-      // I should update ClassSession in types/index.ts if needed, but I'll stick to what I see here.
-      // Actually `getClasses` endpoint usually returns classes with dates? 
-      // Or maybe `allClasses` contains objects that have a `date` property?
-      // I will leave `any` cast for `c` here inside filter to be safe if the type is incomplete, 
-      // OR I should update ClassSession. The prompt asked to replace `any`.
-      // Let's use `any` for `c` inside this specific filter for now to avoid breaking if my ClassSession definition is too narrow.
-      // Actually, looking at the code `parseAvailableClassDate(c.date)`, it definitely has a date.
-      // ClassSession now includes 'date' property.
       const dateObj = parseAvailableClassDate(c.date);
       if (!dateObj) return true;
       const dateStr = format(dateObj, 'yyyy-MM-dd');

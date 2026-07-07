@@ -50,21 +50,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
     } catch (err: unknown) {
       console.error("Failed to decode token:", err);
-      // We cannot call logout() here during render.
-      // If token is invalid, we'll return null and handle cleanup via effect if needed,
-      // or better, just let the next restricted action fail and trigger logout.
-      // For now, effectively logged out state:
+      // Cannot call logout() during render; the effect below clears invalid tokens.
       return { user: null, isAdmin: false };
     }
   }, [token]);
-
-  // Effect to handle invalid token cleanup if necessary?
-  // Actually, if decoding fails, we probably want to clear the token.
-  // But doing it in render is bad. Doing it in effect is what caused the original issue.
-  // The original issue was setting state (user/admin) in effect.
-  // Now we don't set user/admin state. But we might want to setToken(null).
-  // Safe way: usage of invalid token will fail API calls, which triggers logout elsewhere?
-  // Or we use an effect to check validity.
 
   useEffect(() => {
     if (token) {
