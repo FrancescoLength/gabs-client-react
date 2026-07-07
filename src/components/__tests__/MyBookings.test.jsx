@@ -83,9 +83,7 @@ describe('MyBookings', () => {
     test('handles booking cancellation', async () => {
         api.cancelBooking.mockResolvedValue({ message: 'Cancelled successfully' });
 
-        // Mock alert and confirm
         vi.spyOn(window, 'alert').mockImplementation(() => { });
-        vi.spyOn(window, 'confirm').mockImplementation(() => true);
 
         renderWithClient(<MyBookings bookings={mockBookings} onActionSuccess={mockOnActionSuccess} />);
 

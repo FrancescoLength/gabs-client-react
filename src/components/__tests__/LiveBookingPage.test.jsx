@@ -12,8 +12,7 @@ vi.mock('../../context/AuthContext', () => {
     };
 });
 
-// Vitest components mocking
-// Vitest components mocking
+// Mock child components to isolate page-level logic
 vi.mock('../../features/booking/MyBookings', () => ({
     default: () => 'MyBookings Mock'
 }));

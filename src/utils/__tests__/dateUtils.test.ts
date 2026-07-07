@@ -22,25 +22,16 @@ describe('dateUtils', () => {
         });
 
         it('handling next year rollover for past dates', () => {
-            // If today is Jan 1st 2024, and we parse "Dec 25th", it should be Dec 2024 (future) or past?
-            // The logic says: if date < yesterday, add 1 year.
-            // "December 25th" parsed relative to now gives Dec 25, 2024. This is > today, so keeping 2024 is correct.
-
-            // Let's try a date that has passed relative to today.
-            // Today is Jan 1st. "January 1st" is today.
-
-            // Set system time to June 1st
+            // From June 1st, "January 1st" is in the past: it must roll over to next year
             vi.setSystemTime(new Date(2024, 5, 1));
 
-            // Parse "January 1st". This would default to Jan 1st 2024, which is in the past.
-            // So it should roll over to 2025.
             const result = parseBookingDate('Monday 1st January');
             expect(result?.getFullYear()).toBe(2025);
         });
 
         it('returns null for invalid strings', () => {
             const result = parseBookingDate('Invalid Date String');
-            expect(result).toBeNull(); // OR it might return Invalid Date depending on implementation, checked code returns null.
+            expect(result).toBeNull();
         });
     });
 
